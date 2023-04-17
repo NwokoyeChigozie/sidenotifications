@@ -1,0 +1,1 @@
+C:37:"PHPUnit\Runner\DefaultTestResultCache":259:{a:2:{s:7:"defects";a:1:{s:49:"SignupControllerTest::testShouldCreateUserAccount";i:3;}s:5:"times";a:3:{s:24:"ExampleTest::testExample";d:0.018;s:33:"SignupControllerTest::testExample";d:0.047;s:49:"SignupControllerTest::testShouldCreateUserAccount";d:0.056;}}}
