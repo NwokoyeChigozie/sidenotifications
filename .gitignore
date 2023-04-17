@@ -1,0 +1,11 @@
+.env
+.idea
+.phpintel
+/v1/vendor/
+.DS_Store
+/v1/.DS_Store
+logs/*
+v1/vendor
+v1/vendor/*
+_ignore/
+*.DS_Store
