@@ -1,4 +1,4 @@
-package notifications
+package actions
 
 import (
 	"encoding/json"
@@ -8,15 +8,16 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/vesicash/notifications-ms/v2/external/request"
 	"github.com/vesicash/notifications-ms/v2/pkg/repository/storage/postgresql"
+	"github.com/vesicash/notifications-ms/v2/services/names"
 	"github.com/vesicash/notifications-ms/v2/utility"
 )
 
 func ValidateNotificationRequest(c *gin.Context, extReq request.ExternalRequest, db postgresql.Databases, v *validator.Validate, name string) (interface{}, error) {
 	var (
-		actionName = NotificationName(name)
+		actionName = names.NotificationName(name)
 	)
 
-	req, err := actionName.Bind(c)
+	req, err := Bind(c, actionName)
 	if err != nil {
 		return req, err
 	}
@@ -39,11 +40,11 @@ func ValidateNotificationRequest(c *gin.Context, extReq request.ExternalRequest,
 
 func ValidateNotificationRequestMap(c *gin.Context, extReq request.ExternalRequest, db postgresql.Databases, v *validator.Validate, name string) (interface{}, error) {
 	var (
-		actionName = NotificationName(name)
+		actionName = names.NotificationName(name)
 		request    = map[string]interface{}{}
 	)
 
-	req, err := actionName.Bind(c)
+	req, err := Bind(c, actionName)
 	if err != nil {
 		return req, err
 	}
@@ -61,7 +62,7 @@ func ValidateNotificationRequestMap(c *gin.Context, extReq request.ExternalReque
 
 	fmt.Println("first", request)
 
-	currentStruct, _ := actionName.Model()
+	currentStruct, _ := Model(actionName)
 	validateRules, err := postgresql.GetValidationRules(currentStruct, "validate")
 	if err != nil {
 		return req, err

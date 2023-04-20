@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vesicash/notifications-ms/v2/services/notifications"
+	"github.com/vesicash/notifications-ms/v2/services/actions"
 	"github.com/vesicash/notifications-ms/v2/utility"
 )
 
@@ -15,7 +15,7 @@ func (base *Controller) SendNotification(c *gin.Context) {
 		name = strings.ToLower(c.Param("name"))
 	)
 
-	req, err := notifications.ValidateNotificationRequest(c, base.ExtReq, base.Db, base.Validator, name)
+	req, err := actions.ValidateNotificationRequest(c, base.ExtReq, base.Db, base.Validator, name)
 	if err != nil {
 		rd := utility.BuildErrorResponse(http.StatusBadRequest, "error", err.Error(), err, nil)
 		c.JSON(http.StatusBadRequest, rd)
