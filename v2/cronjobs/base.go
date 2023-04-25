@@ -13,7 +13,7 @@ import (
 
 var (
 	cronJobs = map[string]CronJobObject{
-		"send-notifications": {CronJob: SendNotifications, Interval: time.Second * 20},
+		"send-notifications": {CronJob: SendNotifications, Interval: time.Second * 45},
 	}
 	stopSignals = map[string]chan bool{}
 )
