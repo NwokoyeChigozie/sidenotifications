@@ -30,7 +30,7 @@ $router->group(['middleware' => ['api']], function ($router) {
     $router->post('/read', 'Notifications\NotificationsController@read');
     $router->post('/all', 'Notifications\NotificationsController@all');
 
-    // Email routes
+    //// Email routes
     $router->post('/email/send/email_verification', 'Notifications\EmailsNotificationsController@sendEmailVerificationMail');
     $router->post('/email/send/email_verification2', 'Notifications\EmailsNotificationsController@sendEmailVerificationMail2');
 
