@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func FindTemplateFilePath(templateName string) (string, error) {
+func FindTemplateFilePath(templateName string, templateTypePath string) (string, error) {
 	steps, max, found := 1, 6, false
 	currentDir, err := os.Getwd()
 	if err != nil {
@@ -15,7 +15,7 @@ func FindTemplateFilePath(templateName string) (string, error) {
 
 	for steps < max {
 		steps += 1
-		modPath := filepath.Join(currentDir, "services/payment/templates/"+templateName)
+		modPath := filepath.Join(currentDir, fmt.Sprintf("services/templates%v/%v", templateTypePath, templateName))
 		_, err := os.Stat(modPath)
 		if err == nil || !os.IsNotExist(err) {
 			currentDir, found = modPath, true

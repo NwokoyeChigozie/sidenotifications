@@ -16,7 +16,7 @@ func SendNotifications(extReq request.ExternalRequest, db postgresql.Databases) 
 		extReq.Logger.Error("error getting notificatin records: ", err.Error())
 		return
 	}
-	fmt.Println("numer of records found", len(notificationRecords))
+	fmt.Println("number of records found", len(notificationRecords))
 
 	for _, record := range notificationRecords {
 		actions.Send(extReq, db, &record)

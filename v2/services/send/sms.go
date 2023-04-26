@@ -14,8 +14,25 @@ type SMSRequest struct {
 	To     string `json:"to"`    //phone number
 }
 
-func NewSMSRequest(extReq request.ExternalRequest, to, body string) *SMSRequest {
+func NewSMSRequest(extReq request.ExternalRequest, to, templateFileName string, templateData map[string]interface{}) (*SMSRequest, error) {
+	body, err := ParseSMSTemplate(templateFileName, templateData)
+	if err != nil {
+		return &SMSRequest{}, err
+	}
+	return &SMSRequest{ExtReq: extReq, Body: body, To: to}, nil
+}
+
+func NewSimpleSMSRequest(extReq request.ExternalRequest, to, body string) *SMSRequest {
 	return &SMSRequest{ExtReq: extReq, Body: body, To: to}
+}
+
+func SendSimpleSMS(extReq request.ExternalRequest, to, body string) error {
+	err := NewSimpleSMSRequest(extReq, to, body).Send()
+	if err != nil {
+		return fmt.Errorf("error getting sms, %v", err)
+	}
+
+	return nil
 }
 
 func (s SMSRequest) validate() error {

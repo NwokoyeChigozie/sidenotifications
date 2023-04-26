@@ -31,11 +31,6 @@ func main() {
 	r := router.Setup(logger, validatorRef, db, &configuration.App)
 	rM := router.SetupMetrics(&configuration.App)
 
-	// e := send.NewEmailRequest(request.ExternalRequest{Logger: logger}, []string{"gregoflash05@gmail.com"}, "test", "Testing this email")
-	// fmt.Println("gotten request")
-	// err := e.Send()
-	// fmt.Println("error", err)
-
 	cronjobs.StartCronJob(request.ExternalRequest{Logger: logger}, db, "send-notifications")
 	go func(logger *utility.Logger, metricsPort string) {
 		utility.LogAndPrint(logger, fmt.Sprintf("Metric Server is starting at 127.0.0.1:%s", metricsPort))

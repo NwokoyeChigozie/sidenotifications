@@ -1,11 +1,12 @@
 package send
 
 import (
+	"context"
 	"fmt"
-	"net/smtp"
 	"strings"
+	"time"
 
-	"github.com/jordan-wright/email"
+	"github.com/mailgun/mailgun-go/v4"
 	"github.com/vesicash/notifications-ms/v2/external/request"
 	"github.com/vesicash/notifications-ms/v2/internal/config"
 )
@@ -17,13 +18,39 @@ type EmailRequest struct {
 	Body    string   `json:"body"`
 }
 
-func NewEmailRequest(extReq request.ExternalRequest, to []string, subject, body string) *EmailRequest {
+func NewEmailRequest(extReq request.ExternalRequest, to []string, subject, templateFileName, baseTemplateFileName string, templateData map[string]interface{}) (*EmailRequest, error) {
+	body, err := ParseTemplate(extReq, templateFileName, baseTemplateFileName, templateData)
+	if err != nil {
+		return &EmailRequest{}, err
+	}
+	return &EmailRequest{
+		ExtReq:  extReq,
+		To:      to,
+		Subject: subject,
+		Body:    body, //or parsed template
+	}, nil
+}
+
+func NewSimpleEmailRequest(extReq request.ExternalRequest, to []string, subject, body string) *EmailRequest {
 	return &EmailRequest{
 		ExtReq:  extReq,
 		To:      to,
 		Subject: subject,
 		Body:    body, //or parsed template
 	}
+}
+
+func SendEmail(extReq request.ExternalRequest, to string, subject, templateFileName, baseTemplateFileName string, data map[string]interface{}) error {
+	mailRequest, err := NewEmailRequest(extReq, []string{to}, subject, templateFileName, baseTemplateFileName, data)
+	if err != nil {
+		return fmt.Errorf("error getting email request, %v", err)
+	}
+
+	err = mailRequest.Send()
+	if err != nil {
+		return fmt.Errorf("error sending email, %v", err)
+	}
+	return nil
 }
 
 func (e EmailRequest) validate() error {
@@ -51,17 +78,12 @@ func (e EmailRequest) validate() error {
 	return nil
 }
 
-// Send sends out the body in template format
 func (e *EmailRequest) Send() error {
 
 	if err := e.validate(); err != nil {
 		return err
 	}
 
-	// ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	// defer cancel()
-
-	// go e.sendEmailViaSMTP(request, done)
 	err := e.sendEmailViaSMTP()
 
 	if err != nil {
@@ -75,53 +97,26 @@ func (e *EmailRequest) sendEmailViaSMTP() error {
 	var (
 		mailConfig = config.GetConfig().Mail
 	)
-	fmt.Println("connecting ...")
-	auth := smtp.PlainAuth("", mailConfig.Username, mailConfig.Password, mailConfig.Host)
-	fmt.Println("connected", auth)
-	to := "To: " + strings.Join(e.To, ",") + "\r\n"
-	from := "From: \"Vesicash\"\r\n"
-	subject := "Subject: " + e.Subject + "\r\n"
-	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	msg := []byte(to + from + subject + mime + "\r\n" + e.Body)
-	addr := mailConfig.Host + ":" + mailConfig.Port
+	mg := mailgun.NewMailgun(mailConfig.Domain, mailConfig.PrivateApiKey)
 
-	fmt.Println("sending mail ...")
-	if err := smtp.SendMail(addr, auth, mailConfig.Username, e.To, msg); err != nil {
-		fmt.Println("SMTP ERROR MESSAGE", err)
-		return err
-	}
+	sender := mailConfig.SenderEmail
+	subject := e.Subject
+	recipient := e.To
 
-	fmt.Println("sent mail")
+	message := mg.NewMessage(sender, subject, "", recipient...)
+	body := e.Body
 
-	return nil
-}
+	message.SetHtml(body)
 
-func (e *EmailRequest) sendEmailViaSMTP2() error {
-	var (
-		mailConfig = config.GetConfig().Mail
-	)
-	em := email.NewEmail()
-	em.From = "Vesicash <help@vesicash.com>"
-	em.To = e.To
-	em.Subject = e.Subject
-	to := "To: " + strings.Join(e.To, ",") + "\r\n"
-	from := "From: \"Vesicash\"\r\n"
-	subject := "Subject: " + e.Subject + "\r\n"
-	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	msg := []byte(to + from + subject + mime + "\r\n" + e.Body)
-	em.Text = msg
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
-	fmt.Println("connecting ...")
-	auth := smtp.PlainAuth("", mailConfig.Username, mailConfig.Password, mailConfig.Host)
-	fmt.Println("connected", auth)
-
-	fmt.Println("sending mail ...")
-	err := em.Send(fmt.Sprintf("%v:%v", mailConfig.Host, mailConfig.Port), auth)
+	// Send the message with a 10 second timeout
+	resp, id, err := mg.Send(ctx, message)
 	if err != nil {
-		fmt.Println("SMTP ERROR MESSAGE", err)
 		return err
 	}
-	fmt.Println("sent mail")
 
+	fmt.Printf("ID: %s Resp: %s\n", id, resp)
 	return nil
 }

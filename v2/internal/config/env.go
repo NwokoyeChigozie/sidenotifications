@@ -122,10 +122,9 @@ type BaseConfig struct {
 	SLACK_PAYMENT_CHANNELID       string `mapstructure:"SLACK_PAYMENT_CHANNELID"`
 	SLACK_DISBURSEMENTS_CHANNELID string `mapstructure:"SLACK_DISBURSEMENTS_CHANNELID"`
 
-	MAIL_USERNAME string `mapstructure:"MAIL_USERNAME"`
-	MAIL_PASSWORD string `mapstructure:"MAIL_PASSWORD"`
-	MAIL_HOST     string `mapstructure:"MAIL_HOST"`
-	MAIL_PORT     string `mapstructure:"MAIL_PORT"`
+	MAIL_DOMAIN          string `mapstructure:"MAIL_DOMAIN"`
+	MAIL_PRIVATE_API_KEY string `mapstructure:"MAIL_PRIVATE_API_KEY"`
+	MAIL_SENDER_EMAIL    string `mapstructure:"MAIL_SENDER_EMAIL"`
 
 	TERMII_API_KEY  string `mapstructure:"TERMII_API_KEY"`
 	TERMII_BASE_URL string `mapstructure:"TERMII_BASE_URL"`
@@ -254,10 +253,9 @@ func (config *BaseConfig) SetupConfigurationn() *Configuration {
 			DisbursementChannelID: config.SLACK_DISBURSEMENTS_CHANNELID,
 		},
 		Mail: Mail{
-			Username: config.MAIL_USERNAME,
-			Password: config.MAIL_PASSWORD,
-			Host:     config.MAIL_HOST,
-			Port:     config.MAIL_PORT,
+			Domain:        config.MAIL_DOMAIN,
+			PrivateApiKey: config.MAIL_PRIVATE_API_KEY,
+			SenderEmail:   config.MAIL_SENDER_EMAIL,
 		},
 		Termii: Termii{
 			ApiKey:  config.TERMII_API_KEY,
