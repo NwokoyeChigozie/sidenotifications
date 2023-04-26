@@ -4,33 +4,27 @@ import (
 	"fmt"
 
 	"github.com/vesicash/notifications-ms/v2/external/request"
+	"github.com/vesicash/notifications-ms/v2/internal/models"
 	"github.com/vesicash/notifications-ms/v2/pkg/repository/storage/postgresql"
 	"github.com/vesicash/notifications-ms/v2/services/names"
 	"github.com/vesicash/notifications-ms/v2/services/notifications"
 )
 
-func Send(extReq request.ExternalRequest, db postgresql.Databases, data interface{}, name names.NotificationName) error {
+func Send(extReq request.ExternalRequest, db postgresql.Databases, notification *models.NotificationRecord) error {
 	var (
-		err error
-		req = notifications.NotificationObject{
-			Name:   name,
-			ExtReq: extReq,
-			Db:     db,
-			Data:   data,
-		}
+		err  error
+		req  = notifications.NewNotificationObject(extReq, db, notification)
+		name = GetName(notification.Name)
 	)
 
 	switch name {
 	case names.SendWelcomeMail:
 		err = req.SendWelcomeMail()
+	case names.SendWelcomeSMS:
+		err = req.SendWelcomeSMS()
 	default:
-		return fmt.Errorf("send for %v, not implemented", name)
+		return handleNotificationErr(extReq, db, notification, fmt.Errorf("send for %v, not implemented", notification.Name))
 	}
 
-	if err != nil {
-		extReq.Logger.Error(fmt.Sprintf("sending %v failed", name))
-	} else {
-		extReq.Logger.Info(fmt.Sprintf("sending %v successful", name))
-	}
-	return err
+	return handleNotificationErr(extReq, db, notification, err)
 }

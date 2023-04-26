@@ -106,6 +106,13 @@ func SelectAllFromByGroup(db *gorm.DB, orderBy, order string, pagination *Pagina
 		TotalPagesCount: totalPages,
 	}, tx.Error
 }
+func SelectAllFromDbWithLimit(db *gorm.DB, order string, limit int, receiver interface{}, query interface{}, args ...interface{}) error {
+	if order == "" {
+		order = "desc"
+	}
+	tx := db.Order("id "+order).Where(query, args...).Limit(limit).Find(receiver)
+	return tx.Error
+}
 
 func SelectAllFromDbOrderByPaginated(db *gorm.DB, orderBy, order string, pagination Pagination, receiver interface{}, query interface{}, args ...interface{}) (PaginationResponse, error) {
 

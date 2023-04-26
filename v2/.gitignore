@@ -2,3 +2,5 @@ logs/
 config.yaml
 _ignore/
 app.env
+test.html
+test.json

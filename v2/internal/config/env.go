@@ -14,6 +14,8 @@ type Configuration struct {
 	IPStack        IPStack
 	ONLINE_PAYMENT OnlinePayment
 	Slack          Slack
+	Mail           Mail
+	Termii         Termii
 }
 
 type BaseConfig struct {
@@ -119,6 +121,13 @@ type BaseConfig struct {
 	SLACK_OAUTH_TOKEN             string `mapstructure:"SLACK_OAUTH_TOKEN"`
 	SLACK_PAYMENT_CHANNELID       string `mapstructure:"SLACK_PAYMENT_CHANNELID"`
 	SLACK_DISBURSEMENTS_CHANNELID string `mapstructure:"SLACK_DISBURSEMENTS_CHANNELID"`
+
+	MAIL_DOMAIN          string `mapstructure:"MAIL_DOMAIN"`
+	MAIL_PRIVATE_API_KEY string `mapstructure:"MAIL_PRIVATE_API_KEY"`
+	MAIL_SENDER_EMAIL    string `mapstructure:"MAIL_SENDER_EMAIL"`
+
+	TERMII_API_KEY  string `mapstructure:"TERMII_API_KEY"`
+	TERMII_BASE_URL string `mapstructure:"TERMII_BASE_URL"`
 }
 
 func (config *BaseConfig) SetupConfigurationn() *Configuration {
@@ -242,6 +251,15 @@ func (config *BaseConfig) SetupConfigurationn() *Configuration {
 			OauthToken:            config.SLACK_OAUTH_TOKEN,
 			PaymentChannelID:      config.SLACK_PAYMENT_CHANNELID,
 			DisbursementChannelID: config.SLACK_DISBURSEMENTS_CHANNELID,
+		},
+		Mail: Mail{
+			Domain:        config.MAIL_DOMAIN,
+			PrivateApiKey: config.MAIL_PRIVATE_API_KEY,
+			SenderEmail:   config.MAIL_SENDER_EMAIL,
+		},
+		Termii: Termii{
+			ApiKey:  config.TERMII_API_KEY,
+			BaseUrl: config.TERMII_BASE_URL,
 		},
 	}
 }

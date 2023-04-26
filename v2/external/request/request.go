@@ -13,6 +13,7 @@ import (
 	"github.com/vesicash/notifications-ms/v2/external/thirdparty/ip_api"
 	"github.com/vesicash/notifications-ms/v2/external/thirdparty/ipstack"
 	"github.com/vesicash/notifications-ms/v2/external/thirdparty/monnify"
+	"github.com/vesicash/notifications-ms/v2/external/thirdparty/termii"
 	"github.com/vesicash/notifications-ms/v2/internal/config"
 	"github.com/vesicash/notifications-ms/v2/utility"
 )
@@ -99,6 +100,8 @@ var (
 	GetAccessTokenByBusinessID string = "get_access_token_by_busines_id"
 	CheckVerification          string = "check_verification"
 	ListTransactions           string = "list_transactions"
+
+	TermiiSendSMS string = "termii_send_sms"
 )
 
 func (er ExternalRequest) SendExternalRequest(name string, data interface{}) (interface{}, error) {
@@ -723,6 +726,17 @@ func (er ExternalRequest) SendExternalRequest(name string, data interface{}) (in
 				Logger:       er.Logger,
 			}
 			return obj.ListTransactions()
+		case "termii_send_sms":
+			obj := termii.RequestObj{
+				Name:         name,
+				Path:         fmt.Sprintf("%v/api/sms/send", config.Termii.BaseUrl),
+				Method:       "POST",
+				SuccessCode:  200,
+				DecodeMethod: JsonDecodeMethod,
+				RequestData:  data,
+				Logger:       er.Logger,
+			}
+			return obj.TermiiSendSMS()
 		default:
 			return nil, fmt.Errorf("request not found")
 		}

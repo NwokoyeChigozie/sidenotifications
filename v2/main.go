@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/vesicash/notifications-ms/v2/cronjobs"
+	"github.com/vesicash/notifications-ms/v2/external/request"
 	"github.com/vesicash/notifications-ms/v2/internal/config"
 	"github.com/vesicash/notifications-ms/v2/internal/models/migrations"
 	"github.com/vesicash/notifications-ms/v2/pkg/repository/storage/postgresql"
@@ -29,6 +31,7 @@ func main() {
 	r := router.Setup(logger, validatorRef, db, &configuration.App)
 	rM := router.SetupMetrics(&configuration.App)
 
+	cronjobs.StartCronJob(request.ExternalRequest{Logger: logger}, db, "send-notifications")
 	go func(logger *utility.Logger, metricsPort string) {
 		utility.LogAndPrint(logger, fmt.Sprintf("Metric Server is starting at 127.0.0.1:%s", metricsPort))
 		err := rM.Run(":" + metricsPort)
