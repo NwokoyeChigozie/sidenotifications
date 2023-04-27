@@ -38,6 +38,8 @@ func Send(extReq request.ExternalRequest, db postgresql.Databases, notification 
 		err = req.SendEmailVerificationMail()
 	case names.SendEmailVerifiedMail:
 		err = req.SendEmailVerifiedMail()
+	case names.SendSMSToPhone:
+		err = req.SendSMSToPhone()
 	default:
 		return handleNotificationErr(extReq, db, notification, fmt.Errorf("send for %v, not implemented", notification.Name))
 	}

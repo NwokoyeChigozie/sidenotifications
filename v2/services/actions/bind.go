@@ -50,6 +50,10 @@ func Bind(c *gin.Context, name names.NotificationName) (interface{}, error) {
 		req := models.SendEmailVerifiedMail{}
 		err := c.ShouldBind(&req)
 		return req, err
+	case names.SendSMSToPhone:
+		req := models.SendSMSToPhone{}
+		err := c.ShouldBind(&req)
+		return req, err
 	default:
 		return nil, fmt.Errorf("bind for %v, not implemented", name)
 	}

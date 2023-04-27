@@ -33,7 +33,7 @@ func (n NotificationObject) SendOTP() error {
 
 	if user.PhoneNumber != "" {
 		message := fmt.Sprintf("Hello %v, Your One-Time Password is: %v", user.Firstname, notificationData.OtpToken)
-		phone, err := GetInternationalNumber(n.ExtReq, int(user.AccountID))
+		phone, err := GetInternationalNumber(n.ExtReq, user)
 		if err != nil {
 			return err
 		} else {

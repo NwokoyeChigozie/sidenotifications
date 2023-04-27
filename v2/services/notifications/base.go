@@ -171,11 +171,7 @@ func GetBusinessProfileByAccountID(extReq request.ExternalRequest, logger *utili
 	return businessProfile, nil
 }
 
-func GetInternationalNumber(extReq request.ExternalRequest, accountID int) (string, error) {
-	user, err := GetUserWithAccountID(extReq, accountID)
-	if err != nil {
-		return "", fmt.Errorf("error getting user with account id %v, %v", accountID, err)
-	}
+func GetInternationalNumber(extReq request.ExternalRequest, user external_models.User) (string, error) {
 
 	country, err := GetUserCountryWithAccountID(extReq, user)
 	if err != nil {

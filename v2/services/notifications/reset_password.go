@@ -55,7 +55,7 @@ func (n NotificationObject) SendResetPasswordSMS() error {
 	}
 
 	passwordResetUrl := fmt.Sprintf("%v/reset-password/%v", configData.App.SiteUrl, notificationData.Token)
-	phone, err := GetInternationalNumber(n.ExtReq, int(user.AccountID))
+	phone, err := GetInternationalNumber(n.ExtReq, user)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (n NotificationObject) SendResetPasswordDoneSMS() error {
 		return fmt.Errorf("error getting user with account id %v, %v", notificationData.AccountID, err)
 	}
 
-	phone, err := GetInternationalNumber(n.ExtReq, int(user.AccountID))
+	phone, err := GetInternationalNumber(n.ExtReq, user)
 	if err != nil {
 		return err
 	}

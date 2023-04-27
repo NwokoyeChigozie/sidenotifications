@@ -63,7 +63,7 @@ func (n NotificationObject) SendWelcomeSMS() error {
 	}
 	name = thisOrThatStr(user.Firstname, user.PhoneNumber)
 
-	phone, err := GetInternationalNumber(n.ExtReq, int(user.AccountID))
+	phone, err := GetInternationalNumber(n.ExtReq, user)
 	if err != nil {
 		return err
 	}
