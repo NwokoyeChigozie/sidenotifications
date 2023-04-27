@@ -11,4 +11,6 @@ const (
 	SendResetPasswordSMS      NotificationName = "send_reset_password_sms"
 	SendResetPasswordDoneMail NotificationName = "send_reset_password_done_mail"
 	SendResetPasswordDoneSMS  NotificationName = "send_reset_password_done_sms"
+	SendEmailVerificationMail NotificationName = "send_email_verification_mail"
+	SendEmailVerifiedMail     NotificationName = "send_email_verified_mail"
 )
