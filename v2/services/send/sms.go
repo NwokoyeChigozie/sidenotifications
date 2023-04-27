@@ -15,7 +15,7 @@ type SMSRequest struct {
 }
 
 func NewSMSRequest(extReq request.ExternalRequest, to, templateFileName string, templateData map[string]interface{}) (*SMSRequest, error) {
-	body, err := ParseSMSTemplate(templateFileName, templateData)
+	body, err := ParseSMSTemplate(extReq, templateFileName, templateData)
 	if err != nil {
 		return &SMSRequest{}, err
 	}

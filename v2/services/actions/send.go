@@ -48,6 +48,8 @@ func Send(extReq request.ExternalRequest, db postgresql.Databases, notification 
 		err = req.SendAuthorized()
 	case names.SendAuthorization:
 		err = req.SendAuthorization()
+	case names.SendNewTransaction:
+		err = req.SendNewTransaction()
 	default:
 		return handleNotificationErr(extReq, db, notification, fmt.Errorf("send for %v, not implemented", notification.Name))
 	}

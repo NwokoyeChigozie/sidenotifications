@@ -18,4 +18,5 @@ const (
 	SendVerificationSuccessful NotificationName = "send_verification_successful"
 	SendAuthorized             NotificationName = "send_authorized"
 	SendAuthorization          NotificationName = "send_authorization"
+	SendNewTransaction         NotificationName = "send_new_transaction"
 )

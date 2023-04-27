@@ -12,10 +12,12 @@ import (
 )
 
 type EmailRequest struct {
-	ExtReq  request.ExternalRequest
-	To      []string `json:"to"`
-	Subject string   `json:"subject"`
-	Body    string   `json:"body"`
+	ExtReq         request.ExternalRequest
+	To             []string `json:"to"`
+	Subject        string   `json:"subject"`
+	Body           string   `json:"body"`
+	AttachmentName string
+	Attachment     []byte
 }
 
 func NewEmailRequest(extReq request.ExternalRequest, to []string, subject, templateFileName, baseTemplateFileName string, templateData map[string]interface{}) (*EmailRequest, error) {
@@ -50,6 +52,38 @@ func SendEmail(extReq request.ExternalRequest, to string, subject, templateFileN
 	if err != nil {
 		return fmt.Errorf("error sending email, %v", err)
 	}
+	return nil
+}
+
+func SendEmailWithAttachment(extReq request.ExternalRequest, to string, subject, templateFileName, baseTemplateFileName string, data map[string]interface{}, templatePath, templateBasePath, templateName string) error {
+	mailRequest, err := NewEmailRequest(extReq, []string{to}, subject, templateFileName, baseTemplateFileName, data)
+	if err != nil {
+		return fmt.Errorf("error getting email request, %v", err)
+	}
+
+	if templateName != "" && templatePath != "" {
+		err = mailRequest.ProcessPdfAttachment(templateName, templatePath, templateBasePath, data)
+		if err != nil {
+			return fmt.Errorf("error getting pdf attatchment, %v", err)
+		}
+	}
+
+	err = mailRequest.Send()
+	if err != nil {
+		return fmt.Errorf("error sending email, %v", err)
+	}
+	return nil
+}
+
+func (e *EmailRequest) ProcessPdfAttachment(name, templatePath, templateBasePath string, data map[string]interface{}) error {
+	buffer, err := GeneratePDFFromTemplate(e.ExtReq, templatePath, templateBasePath, data)
+	if err != nil {
+		return err
+	}
+
+	e.AttachmentName = name
+	e.Attachment = buffer
+
 	return nil
 }
 
@@ -107,6 +141,10 @@ func (e *EmailRequest) sendEmailViaSMTP() error {
 	body := e.Body
 
 	message.SetHtml(body)
+
+	if e.AttachmentName != "" {
+		message.AddBufferAttachment(e.AttachmentName, e.Attachment)
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()

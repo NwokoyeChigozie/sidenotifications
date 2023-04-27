@@ -70,6 +70,10 @@ func Bind(c *gin.Context, name names.NotificationName) (interface{}, error) {
 		req := models.SendAuthorization{}
 		err := c.ShouldBind(&req)
 		return req, err
+	case names.SendNewTransaction:
+		req := models.SendNewTransaction{}
+		err := c.ShouldBind(&req)
+		return req, err
 	default:
 		return nil, fmt.Errorf("bind for %v, not implemented", name)
 	}

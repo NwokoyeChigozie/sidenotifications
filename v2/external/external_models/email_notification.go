@@ -9,3 +9,7 @@ type EmailNotificationRequest struct {
 type AccountIDRequestModel struct {
 	AccountId uint `json:"account_id"`
 }
+
+type TransactionIDRequestModel struct {
+	TransactionId string `json:"transaction_id"`
+}

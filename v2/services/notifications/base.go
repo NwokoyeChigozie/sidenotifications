@@ -185,3 +185,76 @@ func GetInternationalNumber(extReq request.ExternalRequest, user external_models
 
 	return phone, err
 }
+
+func ListTransactionsByID(extReq request.ExternalRequest, transactionID string) (external_models.TransactionByID, error) {
+
+	transactionInterface, err := extReq.SendExternalRequest(request.ListTransactionsByID, transactionID)
+
+	if err != nil {
+		extReq.Logger.Error(err.Error())
+		return external_models.TransactionByID{}, fmt.Errorf("transaction could not be retrieved")
+	}
+	transaction, ok := transactionInterface.(external_models.TransactionByID)
+	if !ok {
+		return external_models.TransactionByID{}, fmt.Errorf("response data format error")
+	}
+	if transaction.ID == 0 {
+		return external_models.TransactionByID{}, fmt.Errorf("transaction not found")
+	}
+
+	return transaction, nil
+}
+
+func ListPayment(extReq request.ExternalRequest, transactionID string) (external_models.ListPayment, error) {
+	paymentInterface, err := extReq.SendExternalRequest(request.ListPayment, transactionID)
+	if err != nil {
+		return external_models.ListPayment{}, err
+	}
+
+	payment, ok := paymentInterface.(external_models.ListPayment)
+	if !ok {
+		return external_models.ListPayment{}, fmt.Errorf("response data format error")
+	}
+
+	if payment.ID == 0 {
+		return external_models.ListPayment{}, fmt.Errorf("payment listing failed")
+	}
+	return payment, nil
+}
+
+func GetBankDetail(extReq request.ExternalRequest, id, accountID int, country, currency string, isMobileMoneyOperator ...bool) (external_models.BankDetail, error) {
+
+	data := external_models.GetBankDetailModel{}
+	isMobileMoneyOperatorValue := false
+	if len(isMobileMoneyOperator) > 0 {
+		isMobileMoneyOperatorValue = isMobileMoneyOperator[0]
+	}
+	if id != 0 {
+		data = external_models.GetBankDetailModel{
+			ID: uint(id),
+		}
+	} else {
+		data = external_models.GetBankDetailModel{
+			AccountID:             uint(accountID),
+			Country:               country,
+			Currency:              currency,
+			IsMobileMoneyOperator: isMobileMoneyOperatorValue,
+		}
+	}
+	userBankInterface, err := extReq.SendExternalRequest(request.GetBankDetails, data)
+
+	if err != nil {
+		extReq.Logger.Error(err.Error())
+		return external_models.BankDetail{}, err
+	}
+
+	bankDetail, ok := userBankInterface.(external_models.BankDetail)
+	if !ok {
+		return bankDetail, fmt.Errorf("response data format error")
+	}
+	if bankDetail.ID == 0 {
+		return bankDetail, fmt.Errorf("bank detail not found")
+	}
+
+	return bankDetail, nil
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/vesicash/notifications-ms/v2/external/mocks/ip_api_mocks"
 	"github.com/vesicash/notifications-ms/v2/external/mocks/ipstack_mocks"
 	"github.com/vesicash/notifications-ms/v2/external/mocks/monnify_mocks"
+	"github.com/vesicash/notifications-ms/v2/external/mocks/payment_mocks"
 	"github.com/vesicash/notifications-ms/v2/external/mocks/rave_mocks"
 	"github.com/vesicash/notifications-ms/v2/external/mocks/transactions_mocks"
 	"github.com/vesicash/notifications-ms/v2/external/mocks/upload_mocks"
@@ -151,6 +152,19 @@ func (er ExternalRequest) SendExternalRequest(name string, data interface{}) (in
 		return verification_mocks.CheckVerification(er.Logger, data)
 	case "list_transactions":
 		return transactions_mocks.ListTransactions(er.Logger, data)
+	case "create_payment":
+		return payment_mocks.CreatePayment(er.Logger, data)
+	case "list_payment":
+		return payment_mocks.ListPayment(er.Logger, data)
+
+	case "request_manual_refund":
+		return payment_mocks.RequestManualRefund(er.Logger, data)
+	case "wallet_transfer":
+		return payment_mocks.WalletTransfer(er.Logger, data)
+	case "debit_wallet":
+		return payment_mocks.DebitWallet(er.Logger, data)
+	case "credit_wallet":
+		return payment_mocks.CreditWallet(er.Logger, data)
 	default:
 		return nil, fmt.Errorf("request not found")
 	}

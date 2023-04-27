@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/vesicash/notifications-ms/v2/external/microservice/auth"
+	"github.com/vesicash/notifications-ms/v2/external/microservice/payment"
 	"github.com/vesicash/notifications-ms/v2/external/microservice/transactions"
 	"github.com/vesicash/notifications-ms/v2/external/microservice/upload"
 	"github.com/vesicash/notifications-ms/v2/external/microservice/verification"
@@ -102,6 +103,13 @@ var (
 	ListTransactions           string = "list_transactions"
 
 	TermiiSendSMS string = "termii_send_sms"
+
+	CreatePayment       string = "create_payment"
+	ListPayment         string = "list_payment"
+	RequestManualRefund string = "request_manual_refund"
+	WalletTransfer      string = "wallet_transfer"
+	DebitWallet         string = "debit_wallet"
+	CreditWallet        string = "credit_wallet"
 )
 
 func (er ExternalRequest) SendExternalRequest(name string, data interface{}) (interface{}, error) {
@@ -737,6 +745,74 @@ func (er ExternalRequest) SendExternalRequest(name string, data interface{}) (in
 				Logger:       er.Logger,
 			}
 			return obj.TermiiSendSMS()
+		case "create_payment":
+			obj := payment.RequestObj{
+				Name:         name,
+				Path:         fmt.Sprintf("%v/v2/create", config.Microservices.Payment),
+				Method:       "POST",
+				SuccessCode:  201,
+				DecodeMethod: JsonDecodeMethod,
+				RequestData:  data,
+				Logger:       er.Logger,
+			}
+			return obj.CreatePayment()
+
+		case "list_payment":
+			obj := payment.RequestObj{
+				Name:         name,
+				Path:         fmt.Sprintf("%v/v2/listByTransactionId", config.Microservices.Payment),
+				Method:       "GET",
+				SuccessCode:  200,
+				DecodeMethod: JsonDecodeMethod,
+				RequestData:  data,
+				Logger:       er.Logger,
+			}
+			return obj.ListPayment()
+
+		case "request_manual_refund":
+			obj := payment.RequestObj{
+				Name:         name,
+				Path:         fmt.Sprintf("%v/v2/disbursement/process/refund", config.Microservices.Payment),
+				Method:       "POST",
+				SuccessCode:  200,
+				DecodeMethod: JsonDecodeMethod,
+				RequestData:  data,
+				Logger:       er.Logger,
+			}
+			return obj.RequestManualRefund()
+		case "wallet_transfer":
+			obj := payment.RequestObj{
+				Name:         name,
+				Path:         fmt.Sprintf("%v/v2/disbursement/wallet/wallet-transfer", config.Microservices.Payment),
+				Method:       "POST",
+				SuccessCode:  200,
+				DecodeMethod: JsonDecodeMethod,
+				RequestData:  data,
+				Logger:       er.Logger,
+			}
+			return obj.WalletTransfer()
+		case "debit_wallet":
+			obj := payment.RequestObj{
+				Name:         name,
+				Path:         fmt.Sprintf("%v/v2/wallet/debit", config.Microservices.Payment),
+				Method:       "POST",
+				SuccessCode:  200,
+				DecodeMethod: JsonDecodeMethod,
+				RequestData:  data,
+				Logger:       er.Logger,
+			}
+			return obj.DebitWallet()
+		case "credit_wallet":
+			obj := payment.RequestObj{
+				Name:         name,
+				Path:         fmt.Sprintf("%v/v2/wallet/credit", config.Microservices.Payment),
+				Method:       "POST",
+				SuccessCode:  200,
+				DecodeMethod: JsonDecodeMethod,
+				RequestData:  data,
+				Logger:       er.Logger,
+			}
+			return obj.CreditWallet()
 		default:
 			return nil, fmt.Errorf("request not found")
 		}
