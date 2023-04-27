@@ -18,6 +18,14 @@ func Bind(c *gin.Context, name names.NotificationName) (interface{}, error) {
 		req := models.SendWelcomeSMS{}
 		err := c.ShouldBind(&req)
 		return req, err
+	case names.SendOTP:
+		req := models.SendOTP{}
+		err := c.ShouldBind(&req)
+		return req, err
+	case names.SendWelcomePasswordMail:
+		req := models.SendWelcomePasswordMail{}
+		err := c.ShouldBind(&req)
+		return req, err
 	default:
 		return nil, fmt.Errorf("bind for %v, not implemented", name)
 	}

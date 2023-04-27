@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/vesicash/notifications-ms/v2/internal/config"
 	"github.com/vesicash/notifications-ms/v2/internal/models"
 	"github.com/vesicash/notifications-ms/v2/services/send"
 	"github.com/vesicash/notifications-ms/v2/utility"
@@ -75,4 +76,33 @@ func (n NotificationObject) SendWelcomeSMS() error {
 
 	message := fmt.Sprintf("Hello %v, Welcome To Vesicash, Your account has been registered on our platform and you can access it at any time.", name)
 	return send.SendSimpleSMS(n.ExtReq, phone, message)
+}
+
+func (n NotificationObject) SendWelcomePasswordMail() error {
+	var (
+		notificationData     = models.SendWelcomePasswordMail{}
+		subject              = "Create a password to access your Vesicash account"
+		templateFileName     = "welcome_password.html"
+		baseTemplateFileName = ""
+		configData           = config.GetConfig()
+	)
+
+	err := json.Unmarshal([]byte(n.Notification.Data), &notificationData)
+	if err != nil {
+		return fmt.Errorf("error decoding saved notification data, %v", err)
+	}
+
+	passwordResetUrl := fmt.Sprintf("%v/reset-password/%v", configData.App.SiteUrl, notificationData.Token)
+
+	user, err := GetUserWithAccountID(n.ExtReq, notificationData.AccountID)
+	if err != nil {
+		return fmt.Errorf("error getting user with account id %v, %v", notificationData.AccountID, err)
+	}
+
+	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "password_reset_url": passwordResetUrl})
+	if err != nil {
+		return fmt.Errorf("error converting data to map, %v", err)
+	}
+
+	return send.SendEmail(n.ExtReq, user.EmailAddress, subject, templateFileName, baseTemplateFileName, data)
 }

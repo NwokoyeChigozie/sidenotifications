@@ -22,6 +22,10 @@ func Send(extReq request.ExternalRequest, db postgresql.Databases, notification 
 		err = req.SendWelcomeMail()
 	case names.SendWelcomeSMS:
 		err = req.SendWelcomeSMS()
+	case names.SendOTP:
+		err = req.SendOTP()
+	case names.SendWelcomePasswordMail:
+		err = req.SendWelcomePasswordMail()
 	default:
 		return handleNotificationErr(extReq, db, notification, fmt.Errorf("send for %v, not implemented", notification.Name))
 	}
