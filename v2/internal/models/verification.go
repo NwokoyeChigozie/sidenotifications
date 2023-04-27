@@ -6,6 +6,18 @@ type SendEmailVerificationMail struct {
 	Code         uint   `json:"code" validate:"required"`
 	Token        string `json:"token" validate:"required"`
 }
+
 type SendEmailVerifiedMail struct {
 	AccountID int `json:"account_id"  validate:"required" pgvalidate:"exists=auth$users$account_id"`
+}
+
+type SendVerificationFailed struct {
+	AccountID int    `json:"account_id"  validate:"required" pgvalidate:"exists=auth$users$account_id"`
+	Type      string `json:"type"`
+	Reason    string `json:"reason"`
+}
+
+type SendVerificationSuccessful struct {
+	AccountID int    `json:"account_id"  validate:"required" pgvalidate:"exists=auth$users$account_id"`
+	Type      string `json:"type"`
 }
