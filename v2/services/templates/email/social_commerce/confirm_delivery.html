@@ -1,0 +1,19 @@
+{{define "content"}}
+<div style="color: #636363; font-size: 14px">
+  <p>
+    Hi, {{if not (eq .buyer.Firstname "")}} {{ .buyer.Firstname }} {{else}} {{
+    .buyer.EmailAddress }} {{end}},
+  </p>
+  <p>
+    Escrow Transaction {{ .transaction_id }} has been marked as Done. Kindly
+    confirm, and update the status of the transaction. If no action is taken
+    before {{.transaction.InspectionPeriod | format_inspection_period}}, the
+    escrowed funds will be released.
+  </p>
+  <p>
+    <a href="{{.dashboard}}" target="_blank">Visit your Dashboard</a>
+  </p>
+  <p>Sincerely,</p>
+  <p>The Vesicash Team</p>
+</div>
+{{end}}

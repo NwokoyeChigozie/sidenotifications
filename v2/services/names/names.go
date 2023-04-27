@@ -23,4 +23,7 @@ const (
 	SendTransactionRejected             NotificationName = "send_transaction_rejected"
 	SendTransactionDeliveredAndRejected NotificationName = "send_transaction_delivered_and_rejected"
 	SendDisputeOpened                   NotificationName = "send_dispute_opened"
+	SendTransactionDelivered            NotificationName = "send_transaction_delivered"
+	SendDueDateProposal                 NotificationName = "send_due_date_proposal"
+	SendDueDateExtended                 NotificationName = "send_due_date_extended"
 )

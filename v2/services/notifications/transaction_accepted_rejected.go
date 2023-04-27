@@ -249,3 +249,68 @@ func (n NotificationObject) SendDisputeOpened() error {
 	return nil
 
 }
+
+func (n NotificationObject) SendTransactionDelivered() error {
+	var (
+		notificationData = models.SendTransactionDelivered{}
+		extraData        = map[string]interface{}{}
+		subject          = "Escrow Transaction has been marked as Done, please review"
+	)
+
+	err := json.Unmarshal([]byte(n.Notification.Data), &notificationData)
+	if err != nil {
+		return fmt.Errorf("error decoding saved notification data, %v", err)
+	}
+
+	transactionObject, err := GetTransactionObject(n.ExtReq, notificationData.TransactionID)
+	if err != nil {
+		return fmt.Errorf("error getting transaction object, %v", err)
+	}
+
+	extraData = AddTransactionDataToMap(transactionObject, extraData)
+	data, err := ConvertToMapAndAddExtraData(notificationData, extraData)
+	if err != nil {
+		return fmt.Errorf("error converting data to map, %v", err)
+	}
+
+	if transactionObject.Buyer.ID != 0 {
+		data["account_id"] = transactionObject.Buyer.AccountID
+		transactionNotification := TransactionNotificationType1{
+			ExtReq:            n.ExtReq,
+			Db:                n.Db,
+			EmailAddress:      transactionObject.Buyer.EmailAddress,
+			TransactionObject: transactionObject,
+			Marketplace: TransactionNotificationType1Data{
+				Subject:          subject,
+				TemplateFileName: "transactions/transaction_delivered.html",
+			},
+			SocialCommerce: TransactionNotificationType1Data{
+				Subject:              subject,
+				TemplateFileName:     "social_commerce/confirm_delivery.html",
+				BaseTemplateFileName: "default.html",
+			},
+			Default: TransactionNotificationType1Data{
+				Subject:          subject,
+				TemplateFileName: "transactions/transaction_delivered.html",
+			},
+		}
+
+		err := transactionNotification.sendTransactionNotificationType1Data()
+		if err != nil {
+			return err
+		}
+	}
+
+	message := getTransactionMessage("transaction-delivered", transactionObject)
+	if transactionObject.Buyer.PhoneNumber != "" {
+		phone, err := GetInternationalNumber(n.ExtReq, transactionObject.Buyer)
+		if err == nil {
+			err := send.SendSimpleSMS(n.ExtReq, phone, message)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
