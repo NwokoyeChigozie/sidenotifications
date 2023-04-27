@@ -48,11 +48,11 @@ func getTransactionMessage(messageType string, data TransactionDataObject) strin
 	case "transaction-sent":
 		message = "Your escrow transaction has been sent and you will be notified when it has been paid for."
 	case "transaction-received":
-		message = fmt.Sprintf("You have received a new Escrow transaction from %v. Kindly check your email for full details.", data.Seller.EmailAddress)
+		message = "You have received a new Escrow transaction. Kindly check your email for full details."
 	case "transaction-accepted":
 		message = fmt.Sprintf("Your transaction (%v) on Vesicash Escrow has been accepted.", data.Transaction.TransactionID)
 	case "transaction-rejected":
-		message = fmt.Sprintf("Your transaction (%v) on Vesicash Escrow has been rejected . Kindly check your email for full details.", data.Transaction.TransactionID)
+		message = fmt.Sprintf("Your transaction (%v) on Vesicash Escrow has been rejected . Kindly check your dashboard for full details.", data.Transaction.TransactionID)
 	case "transaction-paid":
 		message = fmt.Sprintf("Your transaction (%v) on Vesicash Escrow has been paid for. Please go ahead with the delivery.", data.Transaction.TransactionID)
 	case "transaction-delivered":
