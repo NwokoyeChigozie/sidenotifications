@@ -82,6 +82,14 @@ func Bind(c *gin.Context, name names.NotificationName) (interface{}, error) {
 		req := models.SendTransactionRejected{}
 		err := c.ShouldBind(&req)
 		return req, err
+	case names.SendTransactionDeliveredAndRejected:
+		req := models.SendTransactionDeliveredAndRejected{}
+		err := c.ShouldBind(&req)
+		return req, err
+	case names.SendDisputeOpened:
+		req := models.SendDisputeOpened{}
+		err := c.ShouldBind(&req)
+		return req, err
 	default:
 		return nil, fmt.Errorf("bind for %v, not implemented", name)
 	}

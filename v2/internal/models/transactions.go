@@ -10,3 +10,9 @@ type SendTransactionAccepted struct {
 type SendTransactionRejected struct {
 	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
 }
+type SendTransactionDeliveredAndRejected struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}
+type SendDisputeOpened struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}

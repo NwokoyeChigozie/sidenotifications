@@ -1,0 +1,22 @@
+{{define "content"}}
+<div style="color: #636363; font-size: 14px">
+  <p>
+    Hi {{if not (eq .seller.Firstname "")}} {{ .seller.Firstname }} {{else}} {{
+    .seller.EmailAddress }} {{end}},
+  </p>
+  <p>
+    Unfortunately there was a problem with your recent delivery ({{if not (eq
+    .transaction.Title "")}} {{ .transaction.Title }} {{else}} {{
+    .transaction_id }} {{end}}) and buyer {{if not (eq .buyer.Firstname "")}} {{
+    .buyer.Firstname }} {{else}} {{ .buyer.EmailAddress }} {{end}} has rejected
+    your delivery. Please contact {{if not (eq .buyer.Firstname "")}} {{
+    .buyer.Firstname }} {{else}} {{ .buyer.EmailAddress }} {{end}} in order to
+    resolve this dispute as previously agreed.
+    <br /><br />
+    The transaction funds will be released to your provided bank account once
+    the dispute is resolved.
+    <br /><br />
+    <a href="{{.dashboard}}">My Transactions</a>
+  </p>
+</div>
+{{end}}
