@@ -7,7 +7,6 @@ import (
 
 	"github.com/vesicash/notifications-ms/v2/internal/models"
 	"github.com/vesicash/notifications-ms/v2/services/send"
-	"github.com/vesicash/notifications-ms/v2/utility"
 )
 
 func (n NotificationObject) SendOTP() error {
@@ -33,22 +32,17 @@ func (n NotificationObject) SendOTP() error {
 	businessProfile, _ := GetBusinessProfileByAccountID(n.ExtReq, n.ExtReq.Logger, notificationData.AccountID)
 
 	if user.PhoneNumber != "" {
-		country, err := GetUserCountryWithAccountID(n.ExtReq, int(user.AccountID))
+		message := fmt.Sprintf("Hello %v, Your One-Time Password is: %v", user.Firstname, notificationData.OtpToken)
+		phone, err := GetInternationalNumber(n.ExtReq, int(user.AccountID))
 		if err != nil {
-			errs = append(errs, err.Error())
-		}
-
-		message := fmt.Sprintf("'Hello %v, Your One-Time Password is: %v", user.Firstname, notificationData.OtpToken)
-		phone, err := utility.MakeInternationalPhoneNumber(n.ExtReq.Test, user.PhoneNumber, country.CountryCode)
-		if err != nil {
-			errs = append(errs, fmt.Sprintf("error getting international number for %v, country %v, %v", user.PhoneNumber, country.CountryCode, err.Error()))
+			return err
 		} else {
 			err := send.SendSimpleSMS(n.ExtReq, phone, message)
 			if err != nil {
 				errs = append(errs, err.Error())
 			}
-
 		}
+
 	}
 
 	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "business_name": thisOrThatStr(businessProfile.BusinessName, "Vesicash"), "otp_token": notificationData.OtpToken})

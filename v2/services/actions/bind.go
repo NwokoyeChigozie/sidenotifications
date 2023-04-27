@@ -26,6 +26,22 @@ func Bind(c *gin.Context, name names.NotificationName) (interface{}, error) {
 		req := models.SendWelcomePasswordMail{}
 		err := c.ShouldBind(&req)
 		return req, err
+	case names.SendResetPasswordMail:
+		req := models.SendResetPassword{}
+		err := c.ShouldBind(&req)
+		return req, err
+	case names.SendResetPasswordSMS:
+		req := models.SendResetPassword{}
+		err := c.ShouldBind(&req)
+		return req, err
+	case names.SendResetPasswordDoneMail:
+		req := models.SendResetPasswordDone{}
+		err := c.ShouldBind(&req)
+		return req, err
+	case names.SendResetPasswordDoneSMS:
+		req := models.SendResetPasswordDone{}
+		err := c.ShouldBind(&req)
+		return req, err
 	default:
 		return nil, fmt.Errorf("bind for %v, not implemented", name)
 	}

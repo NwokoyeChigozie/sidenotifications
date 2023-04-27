@@ -26,6 +26,14 @@ func Send(extReq request.ExternalRequest, db postgresql.Databases, notification 
 		err = req.SendOTP()
 	case names.SendWelcomePasswordMail:
 		err = req.SendWelcomePasswordMail()
+	case names.SendResetPasswordMail:
+		err = req.SendResetPasswordMail()
+	case names.SendResetPasswordSMS:
+		err = req.SendResetPasswordSMS()
+	case names.SendResetPasswordDoneMail:
+		err = req.SendResetPasswordDoneMail()
+	case names.SendResetPasswordDoneSMS:
+		err = req.SendResetPasswordDoneSMS()
 	default:
 		return handleNotificationErr(extReq, db, notification, fmt.Errorf("send for %v, not implemented", notification.Name))
 	}

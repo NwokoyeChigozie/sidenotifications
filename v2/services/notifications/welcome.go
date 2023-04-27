@@ -8,7 +8,6 @@ import (
 	"github.com/vesicash/notifications-ms/v2/internal/config"
 	"github.com/vesicash/notifications-ms/v2/internal/models"
 	"github.com/vesicash/notifications-ms/v2/services/send"
-	"github.com/vesicash/notifications-ms/v2/utility"
 )
 
 func (n NotificationObject) SendWelcomeMail() error {
@@ -64,14 +63,9 @@ func (n NotificationObject) SendWelcomeSMS() error {
 	}
 	name = thisOrThatStr(user.Firstname, user.PhoneNumber)
 
-	country, err := GetUserCountryWithAccountID(n.ExtReq, int(user.AccountID))
+	phone, err := GetInternationalNumber(n.ExtReq, int(user.AccountID))
 	if err != nil {
 		return err
-	}
-
-	phone, err := utility.MakeInternationalPhoneNumber(n.ExtReq.Test, user.PhoneNumber, country.CountryCode)
-	if err != nil {
-		return fmt.Errorf("error getting international number for %v, country %v, %v", user.PhoneNumber, country.CountryCode, err)
 	}
 
 	message := fmt.Sprintf("Hello %v, Welcome To Vesicash, Your account has been registered on our platform and you can access it at any time.", name)

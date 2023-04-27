@@ -108,13 +108,12 @@ func GetUserProfileByAccountID(extReq request.ExternalRequest, logger *utility.L
 
 }
 
-func GetUserCountryWithAccountID(extReq request.ExternalRequest, accountID int) (external_models.Country, error) {
-	user, err := GetUserWithAccountID(extReq, accountID)
-	if err != nil {
-		return external_models.Country{}, fmt.Errorf("error getting user with account id %v, %v", accountID, err)
-	}
+func GetUserCountryWithAccountID(extReq request.ExternalRequest, user external_models.User) (external_models.Country, error) {
 
-	var countryNameOrCode string
+	var (
+		countryNameOrCode string
+		accountID         int = int(user.AccountID)
+	)
 
 	switch strings.ToLower(user.AccountType) {
 	case "individual":
@@ -170,4 +169,23 @@ func GetBusinessProfileByAccountID(extReq request.ExternalRequest, logger *utili
 		return external_models.BusinessProfile{}, fmt.Errorf("business lacks a profile")
 	}
 	return businessProfile, nil
+}
+
+func GetInternationalNumber(extReq request.ExternalRequest, accountID int) (string, error) {
+	user, err := GetUserWithAccountID(extReq, accountID)
+	if err != nil {
+		return "", fmt.Errorf("error getting user with account id %v, %v", accountID, err)
+	}
+
+	country, err := GetUserCountryWithAccountID(extReq, user)
+	if err != nil {
+		return "", err
+	}
+
+	phone, err := utility.MakeInternationalPhoneNumber(extReq.Test, user.PhoneNumber, country.CountryCode)
+	if err != nil {
+		return phone, fmt.Errorf("error getting international number for %v, country %v, %v", user.PhoneNumber, country.CountryCode, err)
+	}
+
+	return phone, err
 }
