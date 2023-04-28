@@ -31,3 +31,9 @@ type SendDueDateExtended struct {
 type SendTransactionPaid struct {
 	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
 }
+type SendTransactionClosedBuyer struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}
+type SendTransactionClosedSeller struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}

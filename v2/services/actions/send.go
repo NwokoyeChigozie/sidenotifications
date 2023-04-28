@@ -74,6 +74,16 @@ func Send(extReq request.ExternalRequest, db postgresql.Databases, notification 
 		err = req.SendPaymentReceipt()
 	case names.SendTransactionPaid:
 		err = req.SendTransactionPaid()
+	case names.SendSuccessfulRefund:
+		err = req.SendSuccessfulRefund()
+	case names.SendBuyerDisbursementSuccessful:
+		err = req.SendBuyerDisbursementSuccessful()
+	case names.SendSellerDisbursementSuccessful:
+		err = req.SendSellerDisbursementSuccessful()
+	case names.SendTransactionClosedBuyer:
+		err = req.SendTransactionClosedBuyer()
+	case names.SendTransactionClosedSeller:
+		err = req.SendTransactionClosedSeller()
 	default:
 		return handleNotificationErr(extReq, db, notification, fmt.Errorf("send for %v, not implemented", notification.Name))
 	}

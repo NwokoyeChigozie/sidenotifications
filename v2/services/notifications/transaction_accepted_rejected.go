@@ -210,6 +210,7 @@ func (n NotificationObject) SendTransactionDeliveredAndAccepted() error {
 	return nil
 
 }
+
 func (n NotificationObject) SendTransactionDeliveredAndRejected() error {
 	var (
 		notificationData = models.SendTransactionDeliveredAndRejected{}

@@ -29,3 +29,13 @@ type SendPaymentReceipt struct {
 	EscrowCharge              float64 `json:"escrow_charge"`
 	BrokerCharge              float64 `json:"broker_charge"`
 }
+
+type SendSuccessfulRefund struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}
+type SendBuyerDisbursementSuccessful struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}
+type SendSellerDisbursementSuccessful struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}

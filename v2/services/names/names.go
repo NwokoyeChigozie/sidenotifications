@@ -31,4 +31,9 @@ const (
 	SendWalletDebited                   NotificationName = "send_wallet_debited"
 	SendPaymentReceipt                  NotificationName = "send_payment_receipt"
 	SendTransactionPaid                 NotificationName = "send_transaction_paid"
+	SendSuccessfulRefund                NotificationName = "send_successful_refund"
+	SendBuyerDisbursementSuccessful     NotificationName = "send_buyer_disbursement_successful"
+	SendSellerDisbursementSuccessful    NotificationName = "send_seller_disbursement_successful"
+	SendTransactionClosedBuyer          NotificationName = "send_transaction_closed_buyer"
+	SendTransactionClosedSeller         NotificationName = "send_transaction_closed_seller"
 )
