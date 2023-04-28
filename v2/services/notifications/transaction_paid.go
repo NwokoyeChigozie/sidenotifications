@@ -8,9 +8,9 @@ import (
 	"github.com/vesicash/notifications-ms/v2/services/send"
 )
 
-func (n NotificationObject) SendNewTransaction() error {
+func (n NotificationObject) SendTransactionPaid() error {
 	var (
-		notificationData = models.SendNewTransaction{}
+		notificationData = models.SendTransactionPaid{}
 		extraData        = map[string]interface{}{}
 	)
 
@@ -25,6 +25,8 @@ func (n NotificationObject) SendNewTransaction() error {
 	}
 
 	extraData = AddTransactionDataToMap(transactionObject, extraData)
+	extraData["buyer_user"] = transactionObject.Buyer
+	extraData["seller_user"] = transactionObject.Seller
 	data, err := ConvertToMapAndAddExtraData(notificationData, extraData)
 	if err != nil {
 		return fmt.Errorf("error converting data to map, %v", err)
@@ -39,30 +41,28 @@ func (n NotificationObject) SendNewTransaction() error {
 			TransactionObject: transactionObject,
 			Data:              data,
 			InstantescrowSource: TransactionNotificationType1Data{
-				Subject:          "You just received an Escrow transaction",
-				PdfTemplatePath:  "instantescrow/transaction_received_buyer.html",
-				PdfTemplateName:  "transaction_received.pdf",
-				TemplateFileName: "instantescrow/transaction_received_buyer.html",
+				Subject:          "You have made payment for your transaction",
+				TemplateFileName: "transactions/transaction_paid.html",
+			},
+			Transfer: TransactionNotificationType1Data{
+				Subject:          "You have made payment for your transaction",
+				TemplateFileName: "transactions/transaction_paid.html",
 			},
 			Marketplace: TransactionNotificationType1Data{
-				Subject:              "You have a new escrow transaction",
-				PdfTemplatePath:      "marketplace/transaction_received_buyer.html",
-				BasePdfTemplatePath:  "default.html",
-				PdfTemplateName:      "transaction_received.pdf",
-				TemplateFileName:     "marketplace/transaction_received_buyer.html",
+				Subject:              "You have made payment for your transaction",
+				TemplateFileName:     "social_commerce/successful_payment_made.html",
 				BaseTemplateFileName: "default.html",
 			},
 			SocialCommerce: TransactionNotificationType1Data{
-				Subject:          "You have a new escrow transaction",
-				PdfTemplatePath:  "transactions/transaction_received_buyer.html",
-				PdfTemplateName:  "transaction_received.pdf",
-				TemplateFileName: "transactions/transaction_received_buyer.html",
+				Subject:              "Trizact payment receipt " + notificationData.TransactionID,
+				PdfTemplatePath:      "payment/receipt.html",
+				PdfTemplateName:      "transaction_paid.pdf",
+				TemplateFileName:     "social_commerce/successful_payment_made.html",
+				BaseTemplateFileName: "default.html",
 			},
 			Default: TransactionNotificationType1Data{
-				Subject:          "You have a new escrow transaction",
-				PdfTemplatePath:  "transactions/transaction_received.html",
-				PdfTemplateName:  "transaction_received.pdf",
-				TemplateFileName: "transactions/transaction_received_buyer.html",
+				Subject:          "You have made payment for your transaction",
+				TemplateFileName: "transactions/transaction_paid.html",
 			},
 		}
 
@@ -80,31 +80,26 @@ func (n NotificationObject) SendNewTransaction() error {
 			EmailAddress:      transactionObject.Seller.EmailAddress,
 			TransactionObject: transactionObject,
 			Data:              data,
-			InstantescrowSource: TransactionNotificationType1Data{
-				Subject:          "You just received an Escrow transaction",
-				PdfTemplatePath:  "instantescrow/transaction_received_seller.html",
-				PdfTemplateName:  "transaction_received.pdf",
-				TemplateFileName: "instantescrow/transaction_received_seller.html",
+			Transfer: TransactionNotificationType1Data{
+				Subject:          transactionObject.Buyer.EmailAddress + " just sent you a payment.",
+				TemplateFileName: "transactions/transaction_paid.html",
 			},
 			Marketplace: TransactionNotificationType1Data{
-				Subject:              "You have a new escrow transaction",
-				PdfTemplatePath:      "marketplace/transaction_received_seller.html",
-				BasePdfTemplatePath:  "default.html",
-				PdfTemplateName:      "transaction_received.pdf",
-				TemplateFileName:     "marketplace/transaction_received_seller.html",
+				Subject:              "Your funds have been safely deposited into our trust account",
+				TemplateFileName:     "marketplace/payment_made.html",
 				BaseTemplateFileName: "default.html",
 			},
 			SocialCommerce: TransactionNotificationType1Data{
-				Subject:          "You have a new escrow transaction",
-				PdfTemplatePath:  "transactions/transaction_received.html",
-				PdfTemplateName:  "transaction_received.pdf",
-				TemplateFileName: "transactions/transaction_received_seller.html",
+				Subject:              fmt.Sprintf("%v just paid %v%v via your payment link.", transactionObject.Buyer.Firstname, transactionObject.Transaction.Currency, transactionObject.Transaction.Amount),
+				PdfTemplatePath:      "payment/receipt.html",
+				PdfTemplateName:      "transaction_paid.pdf",
+				TemplateFileName:     "social_commerce/payment_made.html",
+				BaseTemplateFileName: "default.html",
 			},
 			Default: TransactionNotificationType1Data{
-				Subject:          "You have a new escrow transaction",
-				PdfTemplatePath:  "transactions/transaction_received.html",
-				PdfTemplateName:  "transaction_received.pdf",
-				TemplateFileName: "transactions/transaction_received_seller.html",
+				Subject:              "Your funds have been safely deposited into our trust account.",
+				TemplateFileName:     "marketplace/payment_made.html",
+				BaseTemplateFileName: "default.html",
 			},
 		}
 
@@ -114,7 +109,7 @@ func (n NotificationObject) SendNewTransaction() error {
 		}
 	}
 
-	message := getTransactionMessage("transaction-received", transactionObject)
+	message := getTransactionMessage("transaction-paid", transactionObject)
 	if transactionObject.Buyer.PhoneNumber != "" {
 		phone, err := GetInternationalNumber(n.ExtReq, transactionObject.Buyer)
 		if err == nil {

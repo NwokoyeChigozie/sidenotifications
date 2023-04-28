@@ -26,6 +26,7 @@ type TransactionNotificationType1 struct {
 	EmailAddress        string
 	TransactionObject   TransactionDataObject
 	InstantescrowSource TransactionNotificationType1Data
+	Transfer            TransactionNotificationType1Data
 	Marketplace         TransactionNotificationType1Data
 	SocialCommerce      TransactionNotificationType1Data
 	Default             TransactionNotificationType1Data
@@ -88,6 +89,8 @@ func AddTransactionDataToMap(transactionObject TransactionDataObject, data map[s
 	data["transaction"] = transactionObject.Transaction
 	data["buyer"] = transactionObject.Buyer
 	data["seller"] = transactionObject.Seller
+	data["broker_charge_bearer"] = transactionObject.Transaction.Parties["broker_charge_bearer"]
+	data["shipping_charge_bearer"] = transactionObject.Transaction.Parties["shipping_charge_bearer"]
 
 	return data
 }
@@ -107,17 +110,17 @@ func GetTransactionObject(extReq request.ExternalRequest, transactionID string) 
 
 	transactionObj.Business, err = GetBusinessProfileByAccountID(extReq, extReq.Logger, transactionObj.Transaction.BusinessID)
 	if err != nil {
-		return transactionObj, fmt.Errorf("Transaction business owner has no business profile data, %v", err.Error())
+		return transactionObj, fmt.Errorf("transaction business owner has no business profile data, %v", err.Error())
 	}
 
 	buyerParty, ok := transactionObj.Transaction.Parties["buyer"]
 	if !ok {
-		return transactionObj, fmt.Errorf("Transaction has no buyer party")
+		return transactionObj, fmt.Errorf("transaction has no buyer party")
 	}
 
 	sellerParty, ok := transactionObj.Transaction.Parties["seller"]
 	if !ok {
-		return transactionObj, fmt.Errorf("Transaction has no seller party")
+		return transactionObj, fmt.Errorf("transaction has no seller party")
 	}
 
 	transactionObj.Buyer, err = GetUserWithAccountID(extReq, buyerParty.AccountID)
@@ -130,7 +133,7 @@ func GetTransactionObject(extReq request.ExternalRequest, transactionID string) 
 		return transactionObj, err
 	}
 
-	transactionObj.SellerBankDetails, err = GetBankDetail(extReq, 0, sellerParty.AccountID, "", "")
+	transactionObj.SellerBankDetails, _ = GetBankDetail(extReq, 0, sellerParty.AccountID, "", "")
 
 	if strings.EqualFold(transactionObj.Transaction.Type, "broker") {
 		broker := transactionObj.Transaction.Parties["broker"]
@@ -141,8 +144,11 @@ func GetTransactionObject(extReq request.ExternalRequest, transactionID string) 
 }
 
 func (t *TransactionNotificationType1) sendTransactionNotificationType1Data() error {
-	if strings.EqualFold(t.TransactionObject.Transaction.Source, "instantescrow") {
+	if strings.EqualFold(t.TransactionObject.Transaction.Source, "instantescrow") && t.InstantescrowSource.Subject != "" {
 		return send.SendEmailWithAttachment(t.ExtReq, t.EmailAddress, t.InstantescrowSource.Subject, t.InstantescrowSource.TemplateFileName, t.InstantescrowSource.BaseTemplateFileName, t.Data, t.InstantescrowSource.PdfTemplatePath, t.InstantescrowSource.BasePdfTemplatePath, t.InstantescrowSource.PdfTemplateName)
+	}
+	if strings.EqualFold(t.TransactionObject.Transaction.Source, "transfer") && t.Transfer.Subject != "" {
+		return send.SendEmailWithAttachment(t.ExtReq, t.EmailAddress, t.Transfer.Subject, t.Transfer.TemplateFileName, t.Transfer.BaseTemplateFileName, t.Data, t.Transfer.PdfTemplatePath, t.Transfer.BasePdfTemplatePath, t.Transfer.PdfTemplateName)
 	}
 
 	switch strings.ToLower(t.TransactionObject.Business.BusinessType) {

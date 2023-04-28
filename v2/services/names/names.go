@@ -29,4 +29,6 @@ const (
 	SendDueDateExtended                 NotificationName = "send_due_date_extended"
 	SendWalletFunded                    NotificationName = "send_wallet_funded"
 	SendWalletDebited                   NotificationName = "send_wallet_debited"
+	SendPaymentReceipt                  NotificationName = "send_payment_receipt"
+	SendTransactionPaid                 NotificationName = "send_transaction_paid"
 )

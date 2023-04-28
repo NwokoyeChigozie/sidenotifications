@@ -167,6 +167,7 @@ func (n NotificationObject) SendTransactionDeliveredAndAccepted() error {
 			Db:                n.Db,
 			EmailAddress:      transactionObject.Seller.EmailAddress,
 			TransactionObject: transactionObject,
+			Data:              data,
 			InstantescrowSource: TransactionNotificationType1Data{
 				Subject:              "🎉Good news! Your delivery was accepted!.",
 				TemplateFileName:     "instantescrow/delivery_accepted.html",
@@ -238,6 +239,7 @@ func (n NotificationObject) SendTransactionDeliveredAndRejected() error {
 			Db:                n.Db,
 			EmailAddress:      transactionObject.Seller.EmailAddress,
 			TransactionObject: transactionObject,
+			Data:              data,
 			Marketplace: TransactionNotificationType1Data{
 				Subject:              "Your delivery was rejected by the buyer",
 				TemplateFileName:     "social_commerce/delivery_rejected.html",
@@ -351,6 +353,7 @@ func (n NotificationObject) SendTransactionDelivered() error {
 			Db:                n.Db,
 			EmailAddress:      transactionObject.Buyer.EmailAddress,
 			TransactionObject: transactionObject,
+			Data:              data,
 			Marketplace: TransactionNotificationType1Data{
 				Subject:          subject,
 				TemplateFileName: "transactions/transaction_delivered.html",

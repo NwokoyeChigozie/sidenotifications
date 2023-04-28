@@ -28,3 +28,6 @@ type SendDueDateProposal struct {
 type SendDueDateExtended struct {
 	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
 }
+type SendTransactionPaid struct {
+	TransactionID string `json:"transaction_id"  validate:"required" pgvalidate:"exists=transaction$transactions$transaction_id"`
+}
