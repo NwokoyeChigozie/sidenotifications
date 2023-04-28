@@ -81,7 +81,7 @@
               </tr>
             </thead>
             <tbody>
-              {{range {{range $index, $product := .transaction.Products}} }}
+              {{range $index, $product := .transaction.Products }}
               <tr>
                 <td scope="col">{{$product.Title}}</td>
                 <td scope="col">{{$product.Quantity}}</td>
@@ -126,7 +126,7 @@
                 </td>
                 <td scope="col">{{ $milestone.DueDate }}</td>
                 <td scope="col">
-                  {{$milestone.InspectionPeriod | format_inspection_period}}
+                  {{$milestone.InspectionPeriod | FormatInspectionPeriod}}
                 </td>
               </tr>
               {{end}}

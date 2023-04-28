@@ -23,14 +23,14 @@ func (n NotificationObject) SendResetPasswordMail() error {
 		return fmt.Errorf("error decoding saved notification data, %v", err)
 	}
 
-	passwordResetUrl := fmt.Sprintf("%v/reset-password/%v", configData.App.SiteUrl, notificationData.Token)
+	passwordResetUrl := fmt.Sprintf("%v/reset-password/%v", configData.App.SiteUrl, notificationData.AccountID)
 
 	user, err := GetUserWithAccountID(n.ExtReq, notificationData.AccountID)
 	if err != nil {
 		return fmt.Errorf("error getting user with account id %v, %v", notificationData.AccountID, err)
 	}
 
-	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "password_reset_url": passwordResetUrl})
+	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "password_reset_url": passwordResetUrl, "token": notificationData.Token})
 	if err != nil {
 		return fmt.Errorf("error converting data to map, %v", err)
 	}
@@ -54,7 +54,7 @@ func (n NotificationObject) SendResetPasswordSMS() error {
 		return fmt.Errorf("error getting user with account id %v, %v", notificationData.AccountID, err)
 	}
 
-	passwordResetUrl := fmt.Sprintf("%v/reset-password/%v", configData.App.SiteUrl, notificationData.Token)
+	passwordResetUrl := fmt.Sprintf("%v/reset-password/%v", configData.App.SiteUrl, notificationData.AccountID)
 	phone, err := GetInternationalNumber(n.ExtReq, user)
 	if err != nil {
 		return err

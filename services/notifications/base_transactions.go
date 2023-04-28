@@ -86,7 +86,9 @@ func getTransactionMessage(messageType string, data TransactionDataObject) strin
 }
 
 func AddTransactionDataToMap(transactionObject TransactionDataObject, data map[string]interface{}) map[string]interface{} {
-	data["transaction"] = transactionObject.Transaction
+	tx := transactionObject.Transaction
+	tx.Title = strings.Split(tx.Title, ";")[0]
+	data["transaction"] = tx
 	data["buyer"] = transactionObject.Buyer
 	data["seller"] = transactionObject.Seller
 	data["broker_charge_bearer"] = transactionObject.Transaction.Parties["broker_charge_bearer"]

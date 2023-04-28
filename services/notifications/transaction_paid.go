@@ -3,9 +3,11 @@ package notifications
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/vesicash/notifications-ms/internal/models"
 	"github.com/vesicash/notifications-ms/services/send"
+	"github.com/vesicash/notifications-ms/utility"
 )
 
 func (n NotificationObject) SendTransactionPaid() error {
@@ -27,6 +29,13 @@ func (n NotificationObject) SendTransactionPaid() error {
 	extraData = AddTransactionDataToMap(transactionObject, extraData)
 	extraData["buyer_user"] = transactionObject.Buyer
 	extraData["seller_user"] = transactionObject.Seller
+	extraData["broker_charge"], _ = strconv.ParseFloat(transactionObject.Transaction.Broker.BrokerCharge, 64)
+	extraData["shipping_fee"] = transactionObject.Transaction.ShippingFee
+	extraData["currency"] = transactionObject.Transaction.Currency
+	extraData["amount"] = transactionObject.Transaction.TotalAmount
+	extraData["escrow_charge"] = transactionObject.Transaction.EscrowCharge
+	extraData["expected_delivery"] = transactionObject.Transaction.DueDate
+	extraData["inspection_period_formatted"] = utility.FormatInspectionPeriod(transactionObject.Transaction.InspectionPeriod)
 	data, err := ConvertToMapAndAddExtraData(notificationData, extraData)
 	if err != nil {
 		return fmt.Errorf("error converting data to map, %v", err)

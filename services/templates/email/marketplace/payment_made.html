@@ -1,10 +1,13 @@
 {{define "content"}}
 <div style="color: #636363; font-size: 14px">
-  <p>Hi {{ $user->email_address ?? '' }},</p>
+  <p>
+    Hi {{if not (eq .seller.Firstname "")}} {{ .seller.Firstname }} {{else}} {{
+    .seller.EmailAddress }} {{end}},
+  </p>
   <p>
     Your client {{if not (eq .buyer.Firstname "")}} {{ .buyer.Firstname }}
     {{else}} {{ .buyer.EmailAddress }} {{end}} has successfully paid {{
-    .transaction->Currency ?? '' }}{{ .transaction->Amount }} into the escrow
+    .transaction.Currency }}{{ .transaction.TotalAmount }} into the escrow
     account. Kindly proceed with the delivery and track its progress
     <a href="{{ .dashboard}}">here</a>.
   </p>

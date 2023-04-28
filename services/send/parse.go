@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	template2 "text/template"
+	testTemplate "text/template"
 	"time"
 
 	wkhtmltopdf "github.com/SebastiaanKlippert/go-wkhtmltopdf"
@@ -19,8 +19,10 @@ import (
 )
 
 var (
-	funcMap = template.FuncMap{
-		"format_inspection_period": utility.FormatInspectionPeriod,
+	funcMap template.FuncMap = template.FuncMap{
+		"FormatInspectionPeriod": utility.FormatInspectionPeriod,
+		"numberFormat":           utility.NumberFormat,
+		"add":                    utility.Add,
 	}
 )
 
@@ -35,7 +37,6 @@ func ParseTemplate(extReq request.ExternalRequest, templateFileName, baseTemplat
 	if err != nil {
 		return "", err
 	}
-	t.Funcs(funcMap)
 
 	if baseTemplateFileName != "" {
 		baseFileName, err := utility.FindTemplateFilePath(baseTemplateFileName, "/email")
@@ -47,7 +48,7 @@ func ParseTemplate(extReq request.ExternalRequest, templateFileName, baseTemplat
 		if err != nil {
 			return "", err
 		}
-		t = template.New("base")
+		t = template.New("base").Funcs(funcMap)
 		t, err = t.Parse(string(base))
 		if err != nil {
 			return "", err
@@ -63,7 +64,7 @@ func ParseTemplate(extReq request.ExternalRequest, templateFileName, baseTemplat
 			return "", errors.Wrap(err, "template not found")
 		}
 
-		t, err = template.New("email_template").Parse(string(filedata))
+		t, err = template.New("email_template").Funcs(funcMap).Parse(string(filedata))
 		if err != nil {
 			return "", err
 		}
@@ -130,12 +131,10 @@ func ParseSMSTemplate(extReq request.ExternalRequest, templateFileName string, t
 
 	compl := string(filedata)
 
-	t, err1 := template2.New("sms_template").Parse(compl)
+	t, err1 := testTemplate.New("sms_template").Funcs(funcMap).Parse(compl)
 	if err1 != nil {
 		return "", err1
 	}
-
-	t.Funcs(funcMap)
 
 	buf := new(bytes.Buffer)
 	if err2 := t.Execute(buf, templateData); err2 != nil {
@@ -157,7 +156,6 @@ func GeneratePDFFromTemplate(extReq request.ExternalRequest, templatePath, baseT
 	if err != nil {
 		return nil, err
 	}
-	tpl.Funcs(funcMap)
 
 	if baseTemplatepath != "" {
 		baseFileName, err := utility.FindTemplateFilePath(baseTemplatepath, "/email")
@@ -169,7 +167,7 @@ func GeneratePDFFromTemplate(extReq request.ExternalRequest, templatePath, baseT
 		if err != nil {
 			return nil, err
 		}
-		tpl = template.New("base")
+		tpl = template.New("base").Funcs(funcMap)
 		tpl, err = tpl.Parse(string(base))
 		if err != nil {
 			return nil, err
@@ -185,7 +183,7 @@ func GeneratePDFFromTemplate(extReq request.ExternalRequest, templatePath, baseT
 			return nil, errors.Wrap(err, "template not found")
 		}
 
-		tpl, err = template.New("pdf_template").Parse(string(filedata))
+		tpl, err = template.New("pdf_template").Funcs(funcMap).Parse(string(filedata))
 		if err != nil {
 			return nil, err
 		}

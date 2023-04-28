@@ -282,18 +282,17 @@
                               }} {{ if not (eq .transaction.TransactionID "")}}
                               {{ if eq .transaction.Type "broker" }} {{ if eq
                               .buyer.AccountID .broker_charge_bearer.AccountID
-                              }} {{ $broker_charge = (numberFormat
-                              (.broker_charge | default 0)) }} {{ end }} {{ if
-                              eq .buyer.AccountID
-                              .shipping_charge_bearer.AccountID }} {{
-                              $shipping_charge = (numberFormat (.shipping_fee |
-                              default 0)) }} {{ end }} {{ end }} {{ end }}
+                              }} {{ $broker_charge = (.broker_charge |
+                              numberFormat ) }} {{ end }} {{ if eq
+                              .buyer.AccountID .shipping_charge_bearer.AccountID
+                              }} {{ $shipping_charge = (.shipping_fee |
+                              numberFormat ) }} {{ end }} {{ end }} {{ end }}
                               <h2>
-                                {{ $currency := .currency | default "NGN" }} {{
-                                printf "%s %s" $currency (printf "%.0f" (add
-                                (add (numberFormat (.escrow_charge | default 0))
-                                $broker_charge) (add $shipping_charge
-                                (numberFormat (.amount | default 0))))) }}
+                                {{ $currency := .currency }} {{ printf "%s %s"
+                                $currency (printf "%.0f" (add (add
+                                (.escrow_charg | numberFormat) $broker_charge)
+                                (add $shipping_charge (.amount | numberFormat
+                                )))) }}
                               </h2>
                             </td>
                           </tr>
@@ -339,16 +338,14 @@
                                             <td>Broker Charge</td>
                                             <td class="alignright">
                                               {{ printf "%s %s" $currency
-                                              (numberFormat (.broker_charge |
-                                              default 0)) }}
+                                              (.broker_charge | numberFormat) }}
                                             </td>
                                           </tr>
                                           {{ end }}
                                           <tr>
                                             <td>Title</td>
                                             <td class="alignright">
-                                              {{ .transaction.Title | default
-                                              "-" }}
+                                              {{ .transaction.Title }}
                                             </td>
                                           </tr>
                                           {{ if ne .transaction.Source
@@ -356,8 +353,7 @@
                                           <tr>
                                             <td>Expected delivery</td>
                                             <td class="alignright">
-                                              {{ .expected_delivery | default
-                                              "-" }}
+                                              {{ .expected_delivery }}
                                             </td>
                                           </tr>
                                           {{ end }} {{ if ne .transaction.Source
@@ -365,8 +361,7 @@
                                           <tr>
                                             <td>Inspection Period</td>
                                             <td class="alignright">
-                                              {{ .inspection_period_formatted |
-                                              default "-" }}
+                                              {{ .inspection_period_formatted }}
                                             </td>
                                           </tr>
                                           {{ end }}
@@ -377,8 +372,7 @@
                                               }}Sender{{ end }}
                                             </td>
                                             <td class="alignright">
-                                              {{ .buyer_user.EmailAddress |
-                                              default "" }}
+                                              {{ .buyer_user.EmailAddress }}
                                             </td>
                                           </tr>
                                           <tr>
@@ -388,8 +382,7 @@
                                               }}Recipient{{ end }}
                                             </td>
                                             <td class="alignright">
-                                              {{ .seller_user.EmailAddress |
-                                              default "" }}
+                                              {{ .seller_user.EmailAddress }}
                                             </td>
                                           </tr>
                                           <tr class="total">
