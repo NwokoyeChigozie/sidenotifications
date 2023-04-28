@@ -1,0 +1,14 @@
+{{define "content"}}
+<div style="color: #636363; font-size: 14px;">
+    <p>
+    Hi {{if not (eq .seller.Firstname "")}} {{ .seller.Firstname }} {{else}}
+    {{ .seller.EmailAddress }} {{end}}.
+    <br><br>
+    Your delivery for order {{ .transaction_id }} has just been accepted. The transaction funds will be disbursed immediately.
+    <br><br>
+    <a href="{{.dashboard}}">My Transactions</a>
+    </p>
+
+</p>
+</div>
+{{end}}

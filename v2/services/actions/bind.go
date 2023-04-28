@@ -82,6 +82,10 @@ func Bind(c *gin.Context, name names.NotificationName) (interface{}, error) {
 		req := models.SendTransactionRejected{}
 		err := c.ShouldBind(&req)
 		return req, err
+	case names.SendTransactionDeliveredAndAccepted:
+		req := models.SendTransactionDeliveredAndAccepted{}
+		err := c.ShouldBind(&req)
+		return req, err
 	case names.SendTransactionDeliveredAndRejected:
 		req := models.SendTransactionDeliveredAndRejected{}
 		err := c.ShouldBind(&req)
@@ -100,6 +104,14 @@ func Bind(c *gin.Context, name names.NotificationName) (interface{}, error) {
 		return req, err
 	case names.SendDueDateExtended:
 		req := models.SendDueDateExtended{}
+		err := c.ShouldBind(&req)
+		return req, err
+	case names.SendWalletFunded:
+		req := models.SendWalletFunded{}
+		err := c.ShouldBind(&req)
+		return req, err
+	case names.SendWalletDebited:
+		req := models.SendWalletDebited{}
 		err := c.ShouldBind(&req)
 		return req, err
 	default:

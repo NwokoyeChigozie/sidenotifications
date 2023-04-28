@@ -138,6 +138,77 @@ func (n NotificationObject) SendTransactionRejected() error {
 
 }
 
+func (n NotificationObject) SendTransactionDeliveredAndAccepted() error {
+	var (
+		notificationData = models.SendTransactionDeliveredAndAccepted{}
+		extraData        = map[string]interface{}{}
+	)
+
+	err := json.Unmarshal([]byte(n.Notification.Data), &notificationData)
+	if err != nil {
+		return fmt.Errorf("error decoding saved notification data, %v", err)
+	}
+
+	transactionObject, err := GetTransactionObject(n.ExtReq, notificationData.TransactionID)
+	if err != nil {
+		return fmt.Errorf("error getting transaction object, %v", err)
+	}
+
+	extraData = AddTransactionDataToMap(transactionObject, extraData)
+	data, err := ConvertToMapAndAddExtraData(notificationData, extraData)
+	if err != nil {
+		return fmt.Errorf("error converting data to map, %v", err)
+	}
+
+	if transactionObject.Seller.ID != 0 {
+		data["account_id"] = transactionObject.Seller.AccountID
+		transactionNotification := TransactionNotificationType1{
+			ExtReq:            n.ExtReq,
+			Db:                n.Db,
+			EmailAddress:      transactionObject.Seller.EmailAddress,
+			TransactionObject: transactionObject,
+			InstantescrowSource: TransactionNotificationType1Data{
+				Subject:              "🎉Good news! Your delivery was accepted!.",
+				TemplateFileName:     "instantescrow/delivery_accepted.html",
+				BaseTemplateFileName: "default.html",
+			},
+			Marketplace: TransactionNotificationType1Data{
+				Subject:              "Your delivery was accepted!",
+				TemplateFileName:     "transactions/transaction_delivered_accepted.html",
+				BaseTemplateFileName: "default.html",
+			},
+			SocialCommerce: TransactionNotificationType1Data{
+				Subject:              fmt.Sprintf("%v just accepted your delivery", transactionObject.Buyer.EmailAddress),
+				TemplateFileName:     "social_commerce/delivery_accepted.html",
+				BaseTemplateFileName: "default.html",
+			},
+			Default: TransactionNotificationType1Data{
+				Subject:              "Your delivery was accepted!",
+				TemplateFileName:     "transactions/transaction_delivered_accepted.html",
+				BaseTemplateFileName: "default.html",
+			},
+		}
+
+		err := transactionNotification.sendTransactionNotificationType1Data()
+		if err != nil {
+			return err
+		}
+	}
+
+	message := getTransactionMessage("transaction-delivered-accepted", transactionObject)
+	if transactionObject.Seller.PhoneNumber != "" {
+		phone, err := GetInternationalNumber(n.ExtReq, transactionObject.Seller)
+		if err == nil {
+			err := send.SendSimpleSMS(n.ExtReq, phone, message)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+
+}
 func (n NotificationObject) SendTransactionDeliveredAndRejected() error {
 	var (
 		notificationData = models.SendTransactionDeliveredAndRejected{}

@@ -56,6 +56,8 @@ func Send(extReq request.ExternalRequest, db postgresql.Databases, notification 
 		err = req.SendTransactionRejected()
 	case names.SendTransactionDeliveredAndRejected:
 		err = req.SendTransactionDeliveredAndRejected()
+	case names.SendTransactionDeliveredAndAccepted:
+		err = req.SendTransactionDeliveredAndAccepted()
 	case names.SendDisputeOpened:
 		err = req.SendDisputeOpened()
 	case names.SendTransactionDelivered:
@@ -64,6 +66,10 @@ func Send(extReq request.ExternalRequest, db postgresql.Databases, notification 
 		err = req.SendDueDateProposal()
 	case names.SendDueDateExtended:
 		err = req.SendDueDateExtended()
+	case names.SendWalletFunded:
+		err = req.SendWalletFunded()
+	case names.SendWalletDebited:
+		err = req.SendWalletDebited()
 	default:
 		return handleNotificationErr(extReq, db, notification, fmt.Errorf("send for %v, not implemented", notification.Name))
 	}
