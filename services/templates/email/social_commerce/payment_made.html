@@ -1,0 +1,116 @@
+{{define "content"}}
+<div style="color: #636363; font-size: 14px">
+  <p>
+    Hi {{if not (eq .seller.Firstname "")}} {{ .seller.Firstname }} {{else}} {{
+    .seller.EmailAddress }} {{end}},
+    <br /><br />
+    You have just received a payment via your payment link. Please proceed to
+    process the delivery as agreed.
+    <br /><br />
+  </p>
+  <table class="main" width="100%" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="content-wrap aligncenter">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tbody>
+              <tr>
+                <td class="content-block">
+                  <table class="invoice">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <table
+                            class="invoice-items"
+                            cellpadding="0"
+                            cellspacing="0"
+                          >
+                            <tbody>
+                              <tr>
+                                <td>Amount Paid</td>
+                                <td class="alignright">
+                                  {{if
+                                  .transaction.Currency}}{{.transaction.Currency}}
+                                  {{end}}{{printf "%.2f"
+                                  .transaction.TotalAmount}}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Escrow Charge</td>
+                                <td class="alignright">
+                                  {{if
+                                  .transaction.Currency}}{{.transaction.Currency}}
+                                  {{end}}{{printf "%.2f"
+                                  .transaction.EscrowCharge}}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Title</td>
+                                <td class="alignright">
+                                  {{.transaction.Title}}
+                                </td>
+                              </tr>
+                              {{if ne .transaction.Source "transfer"}}
+                              <tr>
+                                <td>Expected delivery</td>
+                                <td class="alignright">
+                                  {{ .transaction.DueDateFormatted}}
+                                </td>
+                              </tr>
+                              {{end}} {{if ne .transaction.Source "transfer"}}
+                              <tr>
+                                <td>Inspection Period</td>
+                                <td class="alignright">
+                                  {{.transaction.InspectionPeriod |
+                                  FormatInspectionPeriod}}
+                                </td>
+                              </tr>
+                              {{end}}
+                              <tr>
+                                <td>Buyer</td>
+                                <td class="alignright">
+                                  {{.buyer.EmailAddress}}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Seller</td>
+                                <td class="alignright">
+                                  {{.seller.EmailAddress}}
+                                </td>
+                              </tr>
+                              <tr class="total">
+                                <td width="50%">Transaction Reference:</td>
+                                <td class="alignright" width="50%">
+                                  {{.transaction_id}}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br /><br />
+          <p>
+            <a
+              href="{{ .dashboard }}"
+              style="
+                background: green;
+                color: #fff;
+                text-align: center;
+                padding: 10px;
+                margin-top: 5px;
+              "
+              >My Transactions</a
+            >
+          </p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{{end}}

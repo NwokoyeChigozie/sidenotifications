@@ -1,0 +1,13 @@
+{{define "content"}}
+<div style="color: #636363; font-size: 14px">
+  <p>
+    Hi {{if not (eq .buyer.Firstname "")}} {{ .buyer.Firstname }} {{else}} {{
+    .buyer.EmailAddress }} {{end}},
+  </p>
+  <p>Please find below the receipt for your Trizact escrow payment.</p>
+  <p>
+    You can manage your transaction from your Dashboard
+    <a href="{{ .dashboard }}">Dashboard</a>
+  </p>
+</div>
+{{end}}
