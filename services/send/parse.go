@@ -157,6 +157,10 @@ func GeneratePDFFromTemplate(extReq request.ExternalRequest, templatePath, baseT
 		return nil, err
 	}
 
+	if extReq.Test {
+		return []byte("testing"), nil
+	}
+
 	if baseTemplatepath != "" {
 		baseFileName, err := utility.FindTemplateFilePath(baseTemplatepath, "/email")
 		if err != nil {

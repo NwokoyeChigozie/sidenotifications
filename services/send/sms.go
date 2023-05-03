@@ -54,8 +54,9 @@ func (s *SMSRequest) Send() error {
 		return err
 	}
 
-	// ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	// defer cancel()
+	if s.ExtReq.Test {
+		return nil
+	}
 
 	err := s.sendSMSViaTermii()
 	if err != nil {
