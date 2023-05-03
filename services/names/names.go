@@ -43,7 +43,6 @@ const (
 	SendSellerDisbursementSuccessful    NotificationName = "send_seller_disbursement_successful"
 	SendTransactionClosedBuyer          NotificationName = "send_transaction_closed_buyer"
 	SendTransactionClosedSeller         NotificationName = "send_transaction_closed_seller"
-	TTTT                                string           = "ttt_tttt_ttt"
 )
 
 func Check() {

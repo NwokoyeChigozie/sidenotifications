@@ -4,6 +4,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strings"
 )
 
 func GetConstants(pkgImportPath string) (map[string]string, error) {
@@ -26,7 +27,7 @@ func GetConstants(pkgImportPath string) (map[string]string, error) {
 							for i, ident := range valueSpec.Names {
 								actionSpec, ok := valueSpec.Values[i].(*ast.BasicLit)
 								if ok {
-									constants[ident.Name] = actionSpec.Value
+									constants[strings.ReplaceAll(ident.Name, `"`, "")] = strings.ReplaceAll(actionSpec.Value, `"`, "")
 								}
 
 							}
