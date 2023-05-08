@@ -29,7 +29,7 @@ func (n NotificationObject) SendEmailVerificationMail() error {
 	}
 
 	verificationUrl := fmt.Sprintf("%v/email-verify/%v/%v", configData.App.SiteUrl, user.AccountID, notificationData.Token)
-	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "code": notificationData.Code, "verification_url": verificationUrl})
+	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "verification_url": verificationUrl})
 	if err != nil {
 		return fmt.Errorf("error converting data to map, %v", err)
 	}
