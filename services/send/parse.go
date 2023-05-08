@@ -81,16 +81,19 @@ func ParseTemplate(extReq request.ExternalRequest, templateFileName, baseTemplat
 
 func AddMoreMailTemplateData(extReq request.ExternalRequest, data map[string]interface{}) map[string]interface{} {
 	appConfig := config.GetConfig()
-	var accountID int
-	accountIDfloat, ok := data["account_id"].(float64)
+	accountID, ok := data["account_id"].(int)
 	if !ok {
-		accountIDStr, ok := data["account_id"].(string)
-		if ok {
-			accountID, _ = (strconv.Atoi(accountIDStr))
+		accountIDfloat, ok := data["account_id"].(float64)
+		if !ok {
+			accountIDStr, ok := data["account_id"].(string)
+			if ok {
+				accountID, _ = (strconv.Atoi(accountIDStr))
+			}
+		} else {
+			accountID = int(accountIDfloat)
 		}
-	} else {
-		accountID = int(accountIDfloat)
 	}
+
 	data["year"] = time.Now().Year()
 	data["faq"] = appConfig.App.SiteUrl + "/faq"
 	if accountID != 0 {

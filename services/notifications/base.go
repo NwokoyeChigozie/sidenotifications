@@ -1,7 +1,6 @@
 package notifications
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -31,12 +30,7 @@ func ConvertToMapAndAddExtraData(data interface{}, newData map[string]interface{
 		mapData map[string]interface{}
 	)
 
-	dataByte, err := json.Marshal(data)
-	if err != nil {
-		return mapData, err
-	}
-
-	err = json.Unmarshal(dataByte, &mapData)
+	mapData, err := utility.StructToMap(data)
 	if err != nil {
 		return mapData, err
 	}

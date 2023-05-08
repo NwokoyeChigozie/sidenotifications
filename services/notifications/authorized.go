@@ -28,7 +28,7 @@ func (n NotificationObject) SendAuthorized() error {
 		return fmt.Errorf("error getting user with account id %v, %v", notificationData.AccountID, err)
 	}
 
-	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "account_id": notificationData.AccountID})
+	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress)})
 	if err != nil {
 		return fmt.Errorf("error converting data to map, %v", err)
 	}

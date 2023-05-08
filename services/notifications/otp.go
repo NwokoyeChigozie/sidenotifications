@@ -45,7 +45,7 @@ func (n NotificationObject) SendOTP() error {
 
 	}
 
-	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "business_name": thisOrThatStr(businessProfile.BusinessName, "Vesicash"), "otp_token": notificationData.OtpToken})
+	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "business_name": thisOrThatStr(businessProfile.BusinessName, "Vesicash")})
 	if err != nil {
 		return fmt.Errorf("error converting data to map, %v, %v", err, strings.Join(errs, ", "))
 	}
