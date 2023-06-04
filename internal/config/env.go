@@ -1,6 +1,9 @@
 package config
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"os"
+)
 
 type Configuration struct {
 	Server         ServerConfiguration
@@ -135,9 +138,15 @@ func (config *BaseConfig) SetupConfigurationn() *Configuration {
 	exemptFromThrottle := []string{}
 	json.Unmarshal([]byte(config.TRUSTED_PROXIES), &trustedProxies)
 	json.Unmarshal([]byte(config.EXEMPT_FROM_THROTTLE), &exemptFromThrottle)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = config.SERVER_PORT
+	}
+
 	return &Configuration{
 		Server: ServerConfiguration{
-			Port:                      config.SERVER_PORT,
+			Port:                      port,
 			Secret:                    config.SERVER_SECRET,
 			AccessTokenExpireDuration: config.SERVER_ACCESSTOKENEXPIREDURATION,
 			RequestPerSecond:          config.REQUEST_PER_SECOND,
