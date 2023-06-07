@@ -16,7 +16,7 @@ executors:
 
 jobs:
   install-dependencies:
-    working_directory: ~/auth-ms
+    working_directory: ~/notifications-ms
     executor: golang
     steps:
       - checkout
@@ -34,7 +34,7 @@ jobs:
             - "/go/pkg/mod"
           key: go-mod-v4-{{ checksum "go.sum" }}
   build-application:
-    working_directory: ~/auth-ms
+    working_directory: ~/notifications-ms
     executor: golang
     environment:
       SERVER_ADDRESS: "staging.api.vesicash.com"
@@ -53,11 +53,11 @@ jobs:
             echo MS_NOTIFICATION: "${SERVER_ADDRESS}/v1/notifications" >> app.env
       - run:
           name: Build application
-          command: go build -v -o vesicash-auth-ms
+          command: go build -v -o vesicash-notifications-ms
       - persist_to_workspace:
           root: .
           paths:
-            - vesicash-auth-ms
+            - vesicash-notifications-ms
             - app.env
   test-application:
     docker:
@@ -66,7 +66,7 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: auth
+          POSTGRES_DB: notifications
     steps:
       - checkout
       - attach_workspace:
@@ -78,8 +78,8 @@ jobs:
           name: Run tests
           command: |
             cat app.env
-            go test -v  -parallel 3 ./tests/test_auth/... -timeout 99999s
-            go test -v  -parallel 3 ./tests/test_auth_models/... -timeout 99999s
+            go test -v  -parallel 3 ./tests/test_notifications/... -timeout 99999s
+            go test -v  -parallel 3 ./tests/test_notifications_models/... -timeout 99999s
   generate-code-coverage-metrics:
     executor: golang
     steps:
@@ -124,11 +124,11 @@ jobs:
           name: Archive Docker image
           command: |
             IMAGE_NAME="${REGISTRY}/vesicash/${CIRCLE_PROJECT_REPONAME}"
-            docker save -o auth-image.tar $IMAGE_NAME
+            docker save -o notifications-image.tar $IMAGE_NAME
       - persist_to_workspace:
           root: .
           paths:
-            - ./auth-image.tar
+            - ./notifications-image.tar
   publish-image:
     executor: ubuntu
     steps:
@@ -139,7 +139,7 @@ jobs:
           docker_layer_caching: true
       - run:
           name: Load archived Docker image
-          command: docker load -i /tmp/workspace/auth-image.tar
+          command: docker load -i /tmp/workspace/notifications-image.tar
       - run:
           name: Publish Docker image
           command: |
