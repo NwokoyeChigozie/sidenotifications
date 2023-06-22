@@ -1,5 +1,12 @@
 package names
 
+import (
+	"fmt"
+	"reflect"
+
+	"github.com/vesicash/notifications-ms/utility"
+)
+
 type NotificationName string
 
 const (
@@ -37,3 +44,24 @@ const (
 	SendTransactionClosedBuyer          NotificationName = "send_transaction_closed_buyer"
 	SendTransactionClosedSeller         NotificationName = "send_transaction_closed_seller"
 )
+
+func Check() {
+	constantName := "SendWelcomeMail"
+	constantValue := reflect.ValueOf(constantName).Interface().(string)
+	fmt.Println("check", constantValue)
+}
+
+func GetNames(pkgImportPath string) ([]string, error) {
+	// pkgImportPath example  ./services/names
+	names := []string{}
+	constants, err := utility.GetConstants(pkgImportPath)
+	if err != nil {
+		return names, err
+	}
+
+	for _, v := range constants {
+		names = append(names, v)
+	}
+
+	return names, nil
+}

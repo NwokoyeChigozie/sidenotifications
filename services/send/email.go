@@ -118,6 +118,10 @@ func (e *EmailRequest) Send() error {
 		return err
 	}
 
+	if e.ExtReq.Test {
+		return nil
+	}
+
 	err := e.sendEmailViaSMTP()
 
 	if err != nil {

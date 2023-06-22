@@ -1,4 +1,4 @@
-package test_payment
+package test_notifications
 
 import (
 	"bytes"

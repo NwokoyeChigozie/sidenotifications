@@ -30,7 +30,7 @@ func (n NotificationObject) SendResetPasswordMail() error {
 		return fmt.Errorf("error getting user with account id %v, %v", notificationData.AccountID, err)
 	}
 
-	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "password_reset_url": passwordResetUrl, "token": notificationData.Token})
+	data, err := ConvertToMapAndAddExtraData(notificationData, map[string]interface{}{"firstname": thisOrThatStr(user.Firstname, user.EmailAddress), "password_reset_url": passwordResetUrl})
 	if err != nil {
 		return fmt.Errorf("error converting data to map, %v", err)
 	}

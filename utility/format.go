@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 )
@@ -56,4 +57,39 @@ func Add(num1, num2 interface{}) float64 {
 		}
 	}
 	return first + second
+}
+
+func StructToMap(obj interface{}) (map[string]interface{}, error) {
+	// Convert the struct to JSON bytes
+	jsonBytes, err := json.Marshal(obj)
+	if err != nil {
+		return map[string]interface{}{}, err
+	}
+
+	// Create an empty map
+	result := make(map[string]interface{})
+
+	// Unmarshal the JSON bytes into the map
+	err = json.Unmarshal(jsonBytes, &result)
+	if err != nil {
+		return map[string]interface{}{}, err
+	}
+
+	// Convert int values to int instead of float64
+	ConvertIntValues(result)
+
+	return result, nil
+}
+
+func ConvertIntValues(m map[string]interface{}) {
+	for key, value := range m {
+		switch v := value.(type) {
+		case float64:
+			if intValue := int(v); float64(intValue) == v {
+				m[key] = intValue
+			}
+		case map[string]interface{}:
+			ConvertIntValues(v)
+		}
+	}
 }
