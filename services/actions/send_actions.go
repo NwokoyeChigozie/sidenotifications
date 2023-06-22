@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	MaxAttempts   = 100
+	MaxAttempts   = 3
 	RetryDuration = time.Minute * time.Duration(2)
 )
 
